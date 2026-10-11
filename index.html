@@ -1,34 +1,36 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>カンテラゲージ(ES)ダッシュボード</title>
 <style>
 *{box-sizing:border-box}body{font-family:"Hiragino Sans","Yu Gothic","Meiryo",sans-serif;margin:0;background:#f4f6f9;color:#222;font-size:13px}
+.top{position:sticky;top:0;z-index:20;box-shadow:0 2px 6px #0002}
 header{background:#1f3a5f;color:#fff;padding:12px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
-header h1{font-size:18px;margin:0;flex:1}select,button{font-size:13px;padding:5px 8px;border-radius:6px;border:1px solid #ccc}
-nav{display:flex;gap:4px;padding:8px 20px 0;background:#e3e8ef;flex-wrap:wrap}nav button{border:none;border-radius:8px 8px 0 0;padding:8px 16px;background:#cfd8e3;cursor:pointer}nav button.on{background:#fff;font-weight:bold}
+header h1{font-size:18px;margin:0;flex:1}.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+select,button{font-size:13px;padding:5px 8px;border-radius:6px;border:1px solid #ccc}
+nav{display:flex;gap:4px;padding:8px 20px 0;background:#e3e8ef;overflow-x:auto;-webkit-overflow-scrolling:touch}
+nav button{border:none;border-radius:8px 8px 0 0;padding:8px 16px;background:#cfd8e3;cursor:pointer;white-space:nowrap;flex:0 0 auto}nav button.on{background:#fff;font-weight:bold}
 main{padding:14px 20px}.sec{display:none}.sec.on{display:block}
 .cards{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.card{background:#fff;border-radius:10px;padding:10px 16px;box-shadow:0 1px 3px #0001;min-width:140px}.card b{font-size:22px;display:block}.card small{color:#666}
 .box{background:#fff;border-radius:10px;padding:12px;box-shadow:0 1px 3px #0001;margin-bottom:12px}
 h3{margin:0 0 8px;font-size:15px;border-left:4px solid #1f3a5f;padding-left:8px}
-table{border-collapse:collapse;width:100%}th,td{border:1px solid #dde2ea;padding:4px 5px;text-align:center;white-space:nowrap}th{background:#eef2f7;font-size:12px}
+table{border-collapse:separate;border-spacing:0;width:100%}th,td{border-right:1px solid #dde2ea;border-bottom:1px solid #dde2ea;padding:4px 5px;text-align:center;white-space:nowrap}th{background:#eef2f7;font-size:12px}
 td.n{text-align:left}tr.avg td{background:#1f3a5f;color:#fff;font-weight:bold}tr.area td{background:#e8eef7;font-weight:bold;text-align:left}
-.lo{background:#ffe9a8}.vlo{background:#f8c08f;font-weight:bold}.hi{color:#0a7a3d;font-weight:bold}
-.up{color:#0a7a3d}.dn{color:#c62828}.th-sort{cursor:pointer}
+.lo{background:#ffe9a8!important}.vlo{background:#f8c08f!important;font-weight:bold}.hi{color:#0a7a3d;font-weight:bold}
+.up{color:#0a7a3d}.dn{color:#c62828}.th-sort{cursor:pointer;text-decoration:underline dotted}.th-sort.cur{background:#d4e2f7}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mvp{display:flex;gap:8px}.mvp>div{flex:1;background:#f7f9fc;border-radius:8px;padding:8px}.mvp ul{margin:4px 0 0;padding-left:16px;font-size:11px;color:#444}
 .legend span{display:inline-block;padding:2px 8px;margin-right:6px;border-radius:4px;font-size:11px}
-.bar{position:relative;height:14px;background:#eef1f5;border-radius:7px}.bar div{height:100%;border-radius:7px}.bar i{position:absolute;top:-3px;bottom:-3px;width:2px;background:#1f3a5f}.dt td{padding:7px 6px}.note{font-size:11px;color:#666;margin-top:6px}
-@media print{header select,header button,nav{display:none}.sec{display:block!important;page-break-after:always}body{background:#fff;font-size:10px}main{padding:0}.box,.card{box-shadow:none;border:1px solid #ddd}@page{size:A4 landscape;margin:8mm}th,td{padding:2px 3px}}
-
-.top{position:sticky;top:0;z-index:20;box-shadow:0 2px 6px #0002}.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-nav{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}nav button{white-space:nowrap;flex:0 0 auto}
-.tw{overflow:auto;max-height:72vh;-webkit-overflow-scrolling:touch;border-radius:6px}
-.tw table{border-collapse:separate;border-spacing:0}.tw th,.tw td{border:0;border-right:1px solid #dde2ea;border-bottom:1px solid #dde2ea}
+.bar{position:relative;height:14px;background:#eef1f5;border-radius:7px}.bar div{height:100%;border-radius:7px}.bar i{position:absolute;top:-3px;bottom:-3px;width:2px;background:#1f3a5f}.dt td{padding:7px 6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}.chips button{border:1px solid #c5d0de;background:#fff;border-radius:16px;padding:6px 12px;cursor:pointer}.chips button.on{background:#1f3a5f;color:#fff;border-color:#1f3a5f;font-weight:bold}.rk1{background:#fff7d6!important}.medal{display:inline-block;width:24px;height:24px;line-height:24px;border-radius:50%;background:#e3e8ef;font-weight:bold}.m1{background:#f5c542}.m2{background:#c9ced6}.m3{background:#d9a066}.mem{font-size:11px;color:#555;text-align:left;white-space:normal;min-width:200px}
+@media (max-width:700px){.chips{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}.chips button{flex:0 0 auto}.mem{min-width:160px}}
+.qi{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-left:3px;border-radius:50%;background:#1f3a5f;color:#fff;font-size:10px;font-weight:bold;cursor:pointer;vertical-align:middle;text-decoration:none}.chips button.on .qi{background:#fff;color:#1f3a5f}
+#qm{display:none;position:fixed;inset:0;background:#0006;z-index:100;align-items:center;justify-content:center;padding:16px}#qm.on{display:flex}.qbox{background:#fff;border-radius:10px;overflow:hidden;width:100%;max-width:440px;box-shadow:0 8px 30px #0004}.qh{padding:12px 14px;font-weight:bold;font-size:15px;position:relative}.qh small{font-weight:normal;font-size:11px}.qx{position:absolute;right:12px;top:6px;font-size:22px;cursor:pointer}.qr{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid #eee;font-size:13px;line-height:1.6;white-space:normal;text-align:left}.qr:nth-child(even){background:#f7f9fc}.qn{flex:0 0 22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-weight:bold;font-size:12px}
+.note{font-size:11px;color:#666;margin-top:6px}
+.tw{overflow:auto;max-height:72vh;-webkit-overflow-scrolling:touch;border-radius:6px;border-left:1px solid #dde2ea;border-top:1px solid #dde2ea}
 .tw th{position:sticky;top:0;z-index:3}
 .sk tr>*:nth-child(1){position:sticky;left:0;z-index:2;min-width:46px;width:46px}
 .sk tr:not(.avg):not(.area)>*:nth-child(2){position:sticky;left:46px;z-index:2;min-width:118px;box-shadow:2px 0 3px #0001}
 .sk1 tr>*:nth-child(1){position:sticky;left:0;z-index:2;box-shadow:2px 0 3px #0001}
 .sk tr:not(.avg):not(.area)>td:nth-child(-n+2),.sk1 td:first-child{background:#fff}
 .sk tr.avg>td:first-child{background:#1f3a5f}.sk tr.area>td:first-child{background:#e8eef7}
-.tw tr>th:nth-child(-n+2){z-index:4}.sk1 tr>th:first-child{z-index:4}
-tr:not(.avg):not(.area):hover td{filter:brightness(.97)}
+.tw tr>th:nth-child(-n+2){z-index:4}
 a{color:#1e63d6;text-decoration:none;font-weight:bold}
 @media (max-width:700px){
  body{font-size:12px}header{padding:8px 10px;gap:6px}header h1{font-size:15px;width:100%}
@@ -40,25 +42,40 @@ a{color:#1e63d6;text-decoration:none;font-weight:bold}
  th,td{padding:5px 4px;font-size:11px}th{font-size:10px;white-space:normal;min-width:44px}
  .sk tr:not(.avg):not(.area)>*:nth-child(2){min-width:96px;max-width:96px;white-space:normal;font-size:11px}
  .dt tr>*:nth-child(4),.dt tr>*:nth-child(7){display:none}.dt tr>*:nth-child(3){min-width:90px}.dt td{padding:8px 4px}
- .legend span{margin:2px 3px 2px 0}.tw{max-height:68vh}
- #ss{width:100%;padding:8px;font-size:14px}.box label{display:block}
+ .tw{max-height:68vh}#ss{width:100%;padding:8px;font-size:14px}.box label{display:block}
 }
-@media print{.top{position:static;box-shadow:none}.tw{max-height:none;overflow:visible}.tw th,.sk *,.sk1 *{position:static!important}}
+
+
+/* ===== PDF/印刷 ===== */
+.ph{display:none}.ponly{display:none}body.pm .ponly{display:block}body.pm tr.px{display:none}
+body.pm .sec{display:none!important}body.pm .sec.pr{display:block!important;margin:0 auto;padding:0;background:#fff}
+body.pm .sec.pr .ph{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #1f3a5f;padding:0 0 4px;margin-bottom:6px}
+.ph b{font-size:18px;color:#1f3a5f}.ph span{font-size:11px;color:#555}
+body.pm .tw{max-height:none!important;overflow:visible!important;border:0}
+body.pm .tw th,body.pm .sk *,body.pm .sk1 *{position:static!important;box-shadow:none!important}
+body.pm .box,body.pm .card{box-shadow:none;border:1px solid #d5dbe4;margin-bottom:6px;padding:6px 8px}
+body.pm .cards{display:flex;flex-wrap:nowrap;gap:6px;margin-bottom:6px}body.pm .card{flex:1;min-width:0;padding:4px 8px}body.pm .card b{font-size:17px}
+body.pm th,body.pm td{padding:2px 4px;font-size:11px}body.pm .dt td{padding:4px}
+body.pm .grid{grid-template-columns:1fr 1fr;gap:6px}body.pm .mvp{flex-direction:row}
+body.pm .qi,body.pm .noprint,body.pm .th-sort{text-decoration:none}body.pm .qi,body.pm .noprint{display:none!important}
+body.pm .note{margin-top:3px;font-size:10px}body.pm h3{font-size:13px;margin-bottom:4px}
+body.pm #tend .tw td,body.pm #tend .tw th{padding:1px 3px;font-size:10px;line-height:1.25}body.pm #tend .grid .tw tr>*:nth-child(2){display:none}body.pm .tw table{width:100%}body.pm .chips{margin:2px 0 6px}body.pm .chips button:not(.on){display:none}
+body.pm .sec[data-o="L"]{page:land}body.pm .sec[data-o="P"]{page:port}
+@page land{size:A4 landscape;margin:7mm}@page port{size:A4 portrait;margin:7mm}@page{size:A4 landscape;margin:7mm}
+@media print{body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.top,#qm{display:none!important}main{padding:0!important}body.pm .sec.pr{break-after:page}body.pm .sec.pr:last-of-type{break-after:auto}}
+.pbtn{background:#fff;color:#1f3a5f;font-weight:bold}
 </style></head><body>
 <div class="top"><header><h1>カンテラゲージ（ES）ダッシュボード</h1>
 <div class="ctl"><label>対象月 <select id="month"></select></label><label>比較月 <select id="cmp"></select></label>
-<button onclick="window.print()">PDF出力</button></div></header>
-<nav><button data-t="sum" class="on">全体サマリー</button><button data-t="area">エリア別</button><button data-t="store">店舗詳細</button><button data-t="tend">傾向</button><button data-t="trend">推移比較</button></nav></div>
-<main>
-<div id="sum" class="sec on"></div><div id="area" class="sec"></div><div id="store" class="sec"></div><div id="tend" class="sec"></div><div id="trend" class="sec"></div>
-</main>
+<button class="pbtn" onclick="printTabs([curTab()])">このページをPDF</button><button onclick="printTabs(TABS)">全ページPDF</button></div></header>
+<nav><button data-t="sum" class="on">全体サマリー</button><button data-t="area">エリア別</button><button data-t="store">店舗詳細</button><button data-t="tend">傾向</button><button data-t="trend">推移比較</button><button data-t="arank">エリアランキング</button></nav></div>
+<main><div id="sum" class="sec on"></div><div id="area" class="sec"></div><div id="store" class="sec"></div><div id="tend" class="sec"></div><div id="trend" class="sec"></div><div id="arank" class="sec"></div></main><div id="qm" onclick="hideQ()"></div>
 <script>
 const ITEMS=["人間関係","環境","教育","理念浸透","ルール","成長・やりがい","リファラル","クオリティ","サービス","クリンリネス"];
 const AREAS={"吉川エリア":["CONA川崎","CONA蒲田","CONA京急蒲田","CONA横浜鶴屋町","CONA横浜西口","CONA平塚"],"岩本エリア":["CONA大宮","CONA西新宿一丁目","CONA新宿東南口","CONA恵比寿","CONA麻布十番","CONA立川","CONA歌舞伎町"],"青山エリア":["CONA柏","CONA船橋"],"堀江エリア":["CONA渋谷宇田川町","CONA錦糸町","CONA所沢"],"牧田エリア":["CONAたまプラーザ","CONA町田","CONA溝の口","ナポリマンあざみ野"],"見越エリア":["CONA上野","CONA津田沼","CONA田町芝浦"]};
-// ===== データ：月を追加する場合は "YYYY-MM": {...} を追記 =====
-// s:[総合,全社順位,回答率, 10項目...]  l:愛されMVP [名前,票]  L:リーダーシップMVP [名前,票,コメント]
+// s:[総合,(全社順位・非表示),回答率,10項目...]
 const DATA={
-"2026-04":{total:80,stores:{
+"2026-04":{stores:{
 "ナポリマンあざみ野":{s:[84,20,83,93,78,86,82,87,90,88,76,81,80],l:[["大塚 一成",5],["関戸 彩華",5],["岩田 江梨花",3]],L:[["関戸 彩華",7,"周りを見て行動しみんなをまとめる／どのポジションでも指示をくれる／新人への教え方が上手"],["羽太 茉白",4,"ドリンクをしながら全体を見てホールやピザ場を手伝う／貫禄がある"],["大塚 一成",4,"周りを見て指示を出す／後輩に常にアドバイス、誰よりも声出し"]]},
 "CONA横浜西口":{s:[75,62,13,82,68,80,73,83,78,70,65,69,80],l:[["磯田 直瑠",2],["大塚 百桃",1],["梅田 真衣",1]],L:[["磯田 直瑠",2,"指示力・周りを見る力に長けている／教えてもらった"],["大塚 百桃",1,"業態変更前にエクセレントスタッフに選ばれていた"],["梅田 真衣",1,"研修で進んで料理を運んでいた"]]},
 "CONA恵比寿":{s:[82,32,83,90,77,78,83,82,83,75,77,82,90],l:[["亀井 由衣",2],["青山 仁心",2],["内山 奨也",1]],L:[["亀井 由衣",4,"接客から後輩教育まで完璧で信頼されている／アルバイトをまとめてくれる"],["内山 奨也",1,"一番歴が長い"]]},
@@ -84,7 +101,7 @@ const DATA={
 "CONA京急蒲田":{s:[78,49,80,92,75,83,74,81,80,75,72,76,76],l:[["水上 陽那多",8],["遠藤 菜摘",3],["古市 一真",2]],L:[["関口 愛可",8,"的確な指示で周りを動かす／困った時にスムーズに助けてくれる／一番歴が長い"],["古市 一真",4,"常に周りを見て指示／年長者で元店長の経験"],["南雲 美貴",2,"出勤時間が多い／動きに無駄がなく指示してくれる"]]},
 "CONA西新宿一丁目":{s:[76,57,74,84,78,75,73,81,83,77,64,72,74],l:[["笠原 羽美",11],["柴田 明依",3],["照井 凛太",1]],L:[["田中 千智",9,"視野の広さと気配り／周りを見てアドバイスしてくれる"],["青木 英俊",4,"様々なところに視野を向ける／社員と同じ温度感で指示出し"],["笠原 羽美",2,"ホール業務を取り仕切る／声がけで店に活気を作る"]]}
 }},
-"2026-07":{total:82,stores:{
+"2026-07":{stores:{
 "CONA上野":{s:[85,21,83,93,87,89,82,87,88,86,74,85,76],l:[["高原 美晴",11],["廣地 憲太郎",2],["曽我 美月",2]],L:[["高原 美晴",12,"周りをよく見て適時に行動できる／常に周りを見ている／歴が浅い自分にも指導してくれる"],["相場 航太",2,"どのポジションも責任を持って安定して動いている"],["曽我 美月",2,"細かいところまで見て的確な指示／混雑時も声出しで引っ張ってくれる"]]},
 "CONA川崎":{s:[79,55,66,85,74,79,80,83,81,75,74,80,74],l:[["鈴木 栞太",10],["三浦 知紗",3],["安宅 優佳",2]],L:[["金井 悠",13,"時間管理・指示が行き届いている／いつも的確な指示／信頼されている"],["安宅 優佳",3,"率先して指示を出し、ダメなところはしっかり伝えてくれる"],["数 空大",3,"アルバイトへの的確な指示で営業が安定する"]]},
 "CONA歌舞伎町":{s:[75,68,54,74,70,82,76,82,71,70,79,80,70],l:[["花岡 はるの",2],["山國 小夏",2],["笠松 諒太",1]],L:[["花岡 はるの",7,"調理場からホール・電話対応までこなし指示も的確／店の運営を考えアドバイスもくれる"]]},
@@ -112,71 +129,110 @@ const DATA={
 }}
 };
 
-const months=Object.keys(DATA).sort();
-const $=id=>document.getElementById(id);
-const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
-const f1=v=>v==null?"-":(Math.round(v*10)/10).toFixed(1);
-function stats(m){const st=DATA[m].stores,names=Object.keys(st);const cols=[...Array(13).keys()].filter(i=>i!==1);const av={};cols.forEach(i=>av[i]=avg(names.map(n=>st[n].s[i])));
- const rk=[...names].sort((a,b)=>st[b].s[0]-st[a].s[0]);const inR={};rk.forEach(n=>inR[n]=1+rk.filter(x=>st[x].s[0]>st[n].s[0]).length);const rankBy=k=>{const o={};names.forEach(n=>o[n]=1+names.filter(x=>st[x].s[k]>st[n].s[k]).length);return o};return{st,names,av,inR,rk,rankBy}}
+const QS={"人間関係":["#f2d64b",["あなたの上司は、あなたと仕事に必要なコミュニケーションが取れていますか？","あなたは、自店舗の社員を信頼・尊敬し、成長させてもらえていますか？","あなたは、自店舗の店長を信頼・尊敬し、成長させてもらえていますか？","あなたは、自店舗のエリアマネージャーを信頼・尊敬し、成長させてもらえていますか？"]],
+"環境":["#b3c3ef",["あなたは今の仕事に対しての報酬に満足していますか？","あなたのお店では、MTG、面談などで自分の意見を出すことができてますか？","あなたのお店は、職場環境の改善に取り組んでいますか？"]],
+"教育":["#b7dde6",["あなたのお店には、しっかりした教育の制度・体制がありますか？","あなたに対して適切な指導・教育をおこなっていますか？","あなたやお店のメンバーは、良い行動や発言をした人に対して「褒め」ていますか？"]],
+"理念浸透":["#f0aaa6",["お店のメンバーは、経営理念や店舗目標に対して行動できてますか？","あなたは経営理念や店舗目標に対して行動できてますか？"]],
+"ルール":["#a9d6b4",["あなたやお店のメンバーは、決めた事やルールを守れていますか？","あなたやお店のメンバーは、ルールに対して注意をし合っていますか？"]],
+"成長・やりがい":["#f2c14e",["あなたはこの会社を通じて、成長できていると感じますか？","あなたは、今の仕事にやりがいを感じますか？","あなたは、今の仕事に楽しさを感じますか？"]],
+"リファラル":["#9cc96b",["今働いているお店で、これからも働き続けたいと思いますか？","お仕事(アルバイト)を探している友人、知人に、お店を紹介したいと思いますか？"]],
+"クオリティ":["#f29a92",["あなたのお店の料理・商品のクオリティは何点ですか？","あなたのお店ではお客様に料理・商品をお待たせすることはないですか？"]],
+"サービス":["#86c27a",["お店のメンバーからは、お客様に喜んでもらいたいという気持ちが感じられますか？","あなたのお店の接客・サービスは何点ですか？"]],
+"クリンリネス":["#d3a8d8",["あなたのお店の店内はしっかり清掃はされていますか？","あなたのお店はしっかり整理整頓されていますか？"]]};
+const QI=n=>QS[n]?`${n}<span class="qi" data-q="${n}">?</span>`:n;
+const LQ=k=>QI(LAB(k));
+function showQ(n){const[c,q]=QS[n];$("qm").innerHTML=`<div class="qbox" onclick="event.stopPropagation()"><div class="qh" style="background:${c}">${n} <small>(${q.length}問)</small><span class="qx" onclick="hideQ()">×</span></div>${q.map((s,i)=>`<div class="qr"><span class="qn" style="background:${c}">${i+1}</span>${s}</div>`).join("")}</div>`;$("qm").classList.add("on")}
+function hideQ(){$("qm").classList.remove("on")}
+document.addEventListener("click",e=>{const q=e.target.closest(".qi");if(q){e.stopPropagation();e.preventDefault();showQ(q.dataset.q)}},true);
+document.addEventListener("keydown",e=>{if(e.key=="Escape")hideQ()});
+
+const months=Object.keys(DATA).sort();const $=id=>document.getElementById(id);
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;const f1=v=>v==null?"-":(Math.round(v*10)/10).toFixed(1);
+const KEYS=[0,2,...ITEMS.map((_,i)=>i+3)];const LAB=k=>k==0?"総合":k==2?"回答率":ITEMS[k-3];
+function stats(m){const st=DATA[m].stores,names=Object.keys(st),av={};KEYS.forEach(i=>av[i]=avg(names.map(n=>st[n].s[i])));
+ const rankBy=k=>{const o={};names.forEach(n=>o[n]=1+names.filter(x=>st[x].s[k]>st[n].s[k]).length);return o};
+ const rk=[...names].sort((a,b)=>st[b].s[0]-st[a].s[0]);return{st,names,av,rk,rankBy,inR:rankBy(0)}}
 function cls(v,a){if(a==null)return"";const d=v-a;return d<=-5?"vlo":d<0?"lo":d>=5?"hi":""}
-function diff(v,p){if(p==null)return'<span style="color:#aaa">-</span>';const d=v-p;return d>0?`<span class="up">▲${f1(d).replace(".0","")}</span>`:d<0?`<span class="dn">▼${f1(-d).replace(".0","")}</span>`:"±0"}
+function diff(v,p){if(p==null)return'<span style="color:#aaa">-</span>';const d=Math.round((v-p)*10)/10;return d>0?`<span class="up">▲${d}</span>`:d<0?`<span class="dn">▼${-d}</span>`:"±0"}
 function areaOf(n){for(const a in AREAS)if(AREAS[a].includes(n))return a;return"未分類"}
 const legend=`<div class="legend"><span class="lo">平均未満</span><span class="vlo">平均-5pt以下</span><span class="hi">平均+5pt以上</span> ※ブランド平均・ブランド順位は送付分のCONA・ナポリマン店舗のみで算出</div>`;
-let sortKey=0;const sortLabel=()=>sortKey==0?"総合":sortKey==2?"回答率":ITEMS[sortKey-3];
-let TH=5;
-function renderTend(S,P){const el=$("tend");if(!P){el.innerHTML='<div class="box">比較月を選択してください。</div>';return}
- const lab=["総合",null,null,...ITEMS],ups=[],dns=[];
- S.names.forEach(n=>{if(!P.st[n])return;const s=S.st[n].s,p=P.st[n].s;[0,...ITEMS.map((_,i)=>i+3)].forEach(i=>{const d=s[i]-p[i];if(Math.abs(d)>=TH)(d>0?ups:dns).push({n,a:areaOf(n),it:lab[i],p:p[i],v:s[i],d})})});
- ups.sort((a,b)=>b.d-a.d);dns.sort((a,b)=>a.d-b.d);
- const bi=[0,...ITEMS.map((_,i)=>i+3)].map(i=>({it:lab[i],p:P.av[i],v:S.av[i],d:S.av[i]-P.av[i]}));
- const cnt=(L,k)=>{const o={};L.forEach(x=>o[x[k]]=(o[x[k]]||0)+1);return Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>`${x[0]}（${x[1]}）`).join("、")||"-"};
- const tbl=(L,c)=>L.length?`<div class="tw sk1"><table><tr><th>店舗</th><th>エリア</th><th>項目</th><th>${cmpM()}</th><th>${cur()}</th><th>増減</th></tr>${L.map(x=>`<tr><td class="n">${x.n}</td><td>${x.a.replace("エリア","")}</td><td>${x.it}</td><td>${x.p}</td><td>${x.v}</td><td class="${c}"><b>${x.d>0?"▲":"▼"}${Math.abs(x.d)}</b></td></tr>`).join("")}</table></div>`:'<div class="note">該当なし</div>';
- el.innerHTML=`<div class="box"><h3>傾向（${cmpM()} → ${cur()}）</h3><label>ピックアップ基準：±<select id="th">${[3,5,8,10].map(v=>`<option ${v==TH?"selected":""}>${v}</option>`).join("")}</select>pt以上</label>
- <div class="tw sk1" style="margin-top:8px"><table><tr><th>ブランド平均</th>${bi.map(x=>`<th>${x.it}</th>`).join("")}</tr><tr><td>${cmpM()}</td>${bi.map(x=>`<td>${f1(x.p)}</td>`).join("")}</tr><tr><td>${cur()}</td>${bi.map(x=>`<td>${f1(x.v)}</td>`).join("")}</tr><tr><td>増減</td>${bi.map(x=>`<td class="${x.d>0?"up":x.d<0?"dn":""}"><b>${x.d>0?"▲":x.d<0?"▼":"±"}${f1(Math.abs(x.d))}</b></td>`).join("")}</tr></table></div></div>
- <div class="grid"><div class="box"><h3 style="border-color:#0a7a3d">上昇ピックアップ（${ups.length}件）</h3><div class="note">店舗別件数：${cnt(ups,"n")}<br>項目別件数：${cnt(ups,"it")}</div>${tbl(ups,"up")}</div>
- <div class="box"><h3 style="border-color:#c62828">減少ピックアップ（${dns.length}件）</h3><div class="note">店舗別件数：${cnt(dns,"n")}<br>項目別件数：${cnt(dns,"it")}</div>${tbl(dns,"dn")}</div></div>
- <div class="note">回答率は対象外。比較月にデータがない店舗は除外。</div>`;
- $("th").onchange=e=>{TH=+e.target.value;renderTend(S,P)}}
-function head(){return`<tr><th>ブランド順位<br><small>${sortLabel()}</small></th><th>店舗</th><th>エリア</th><th class="th-sort" onclick="sortKey=0;render()">総合</th><th>前回比</th><th>全社順位</th><th class="th-sort" onclick="sortKey=2;render()">回答率</th>${ITEMS.map((t,i)=>`<th class="th-sort" onclick="sortKey=${i+3};render()">${t}</th>`).join("")}</tr>`}
-function row(n,S,P){const RK=S.rankBy(sortKey);const s=S.st[n].s,p=P&&P.st[n]?P.st[n].s:null;return`<tr><td><b>${RK[n]}</b></td><td class="n"><a href="#" onclick="openStore('${n}');return false">${n}</a></td><td>${areaOf(n).replace("エリア","")}</td><td class="${cls(s[0],S.av[0])}"><b>${s[0]}</b></td><td>${diff(s[0],p&&p[0])}</td><td>${s[1]}/${DATA[cur()].total||"-"}</td><td class="${cls(s[2],S.av[2])}">${s[2]}%</td>${ITEMS.map((_,i)=>`<td class="${cls(s[i+3],S.av[i+3])}">${s[i+3]}<br><small>${diff(s[i+3],p&&p[i+3])}</small></td>`).join("")}</tr>`}
-function avgRow(lbl,S,names){const a=i=>avg(names.map(n=>S.st[n].s[i]));return`<tr class="avg"><td colspan="3">${lbl}</td><td>${f1(a(0))}</td><td></td><td></td><td>${f1(a(2))}%</td>${ITEMS.map((_,i)=>`<td>${f1(a(i+3))}</td>`).join("")}</tr>`}
 const cur=()=>$("month").value,cmpM=()=>$("cmp").value;
-function renderSum(S,P){const n=S.names.length;const best=S.rk[0],worst=S.rk[n-1];
- const itemAv=ITEMS.map((t,i)=>[t,S.av[i+3]]).sort((a,b)=>a[1]-b[1]);
+let sortKey=0;
+function head(){return`<tr><th>ブランド順位<br><small>${LAB(sortKey)}</small></th><th>店舗</th><th>エリア</th>${KEYS.map(k=>`<th class="th-sort ${k==sortKey?"cur":""}" onclick="sortKey=${k};render()">${LQ(k)}</th>`).join("")}</tr>`}
+function row(n,S,P){const RK=S.rankBy(sortKey),s=S.st[n].s,p=P&&P.st[n]?P.st[n].s:null;
+ return`<tr><td><b>${RK[n]}</b></td><td class="n"><a href="#" onclick="openStore('${n}');return false">${n}</a></td><td>${areaOf(n).replace("エリア","")}</td>${KEYS.map(k=>`<td class="${cls(s[k],S.av[k])}">${k==0?"<b>":""}${s[k]}${k==2?"%":""}${k==0?"</b>":""}<br><small>${diff(s[k],p&&p[k])}</small></td>`).join("")}</tr>`}
+function avgRow(lbl,S,names){return`<tr class="avg"><td colspan="3">${lbl}</td>${KEYS.map(k=>`<td>${f1(avg(names.map(n=>S.st[n].s[k])))}${k==2?"%":""}</td>`).join("")}</tr>`}
+function renderSum(S,P){const n=S.names.length,best=S.rk[0],worst=S.rk[n-1];const ia=ITEMS.map((t,i)=>[t,S.av[i+3]]).sort((a,b)=>a[1]-b[1]);
  const sorted=[...S.names].sort((a,b)=>S.st[b].s[sortKey]-S.st[a].s[sortKey]);
- let h=`<div class="cards"><div class="card"><small>対象店舗数</small><b>${n}店舗</b></div><div class="card"><small>ブランド平均（総合）</small><b>${f1(S.av[0])}点</b>${P?`<small>前回 ${f1(P.av[0])} ${diff(S.av[0],P.av[0])}</small>`:""}</div><div class="card"><small>平均回答率</small><b>${f1(S.av[2])}%</b></div><div class="card"><small>最高</small><b>${S.st[best].s[0]}点</b><small>${best}</small></div><div class="card"><small>最低</small><b>${S.st[worst].s[0]}点</b><small>${worst}</small></div><div class="card"><small>平均が最も低い項目</small><b>${itemAv[0][0]}</b><small>${f1(itemAv[0][1])}点 / 次点 ${itemAv[1][0]} ${f1(itemAv[1][1])}点</small></div></div>`;
- h+=`<div class="box"><h3>店舗別スコア一覧（${cur()}${P?` ／ 比較：${cmpM()}`:""}）</h3>${legend}<div class="tw sk"><table>${head()}${avgRow("ブランド平均",S,S.names)}${sorted.map(x=>row(x,S,P)).join("")}</table></div><div class="note">見出し（総合・回答率・各項目）クリックで並び替え。全社順位は全体店舗数（4月80・7月82）中の参考値。</div></div>`;
- $("sum").innerHTML=h}
+ $("sum").innerHTML=`<div class="cards"><div class="card"><small>対象店舗数</small><b>${n}店舗</b></div><div class="card"><small>ブランド平均（総合）</small><b>${f1(S.av[0])}点</b>${P?`<small>前回 ${f1(P.av[0])} ${diff(S.av[0],P.av[0])}</small>`:""}</div><div class="card"><small>ブランド平均回答率</small><b>${f1(S.av[2])}%</b></div><div class="card"><small>ブランド1位</small><b>${S.st[best].s[0]}点</b><small>${best}</small></div><div class="card"><small>ブランド最下位</small><b>${S.st[worst].s[0]}点</b><small>${worst}</small></div><div class="card"><small>平均が最も低い項目</small><b>${QI(ia[0][0])}</b><small>${f1(ia[0][1])}点 / 次点 ${ia[1][0]} ${f1(ia[1][1])}点</small></div></div>
+ <div class="box"><h3>店舗別スコア一覧（${cur()}${P?` ／ 比較：${cmpM()}`:""}）</h3>${legend}<div class="tw sk"><table>${head()}${avgRow("ブランド平均",S,S.names)}${sorted.map(x=>row(x,S,P)).join("")}</table></div><div class="note">見出し（総合・回答率・各項目）タップで並び替え・ブランド順位が切り替わります。各セル下段は前回比。</div></div>`}
 function renderArea(S,P){let h=`<div class="box"><h3>エリア別スコア（${cur()}）</h3>${legend}<div class="tw sk"><table>${head()}${avgRow("ブランド平均",S,S.names)}`;
- const groups={};S.names.forEach(n=>(groups[areaOf(n)]=groups[areaOf(n)]||[]).push(n));
- Object.keys(AREAS).concat(["未分類"]).forEach(a=>{const g=groups[a];if(!g)return;g.sort((x,y)=>S.st[y].s[sortKey]-S.st[x].s[sortKey]);
-  const ga=i=>avg(g.map(n=>S.st[n].s[i]));h+=`<tr class="area"><td colspan="3">${a}（${g.length}店舗）平均</td><td class="${cls(ga(0),S.av[0])}">${f1(ga(0))}</td><td></td><td></td><td>${f1(ga(2))}%</td>${ITEMS.map((_,i)=>`<td class="${cls(ga(i+3),S.av[i+3])}">${f1(ga(i+3))}</td>`).join("")}</tr>`+g.map(x=>row(x,S,P)).join("")});
+ const g0={};S.names.forEach(n=>(g0[areaOf(n)]=g0[areaOf(n)]||[]).push(n));
+ Object.keys(AREAS).concat(["未分類"]).forEach(a=>{const g=g0[a];if(!g)return;g.sort((x,y)=>S.st[y].s[sortKey]-S.st[x].s[sortKey]);const ga=k=>avg(g.map(n=>S.st[n].s[k]));
+  h+=`<tr class="area"><td colspan="3">${a}（${g.length}店舗）平均</td>${KEYS.map(k=>`<td class="${cls(ga(k),S.av[k])}">${f1(ga(k))}${k==2?"%":""}</td>`).join("")}</tr>`+g.map(x=>row(x,S,P)).join("")});
  const miss=Object.values(AREAS).flat().filter(n=>!S.st[n]);
- h+=`</table></div><div class="note">見出し（総合・回答率・各項目）クリックでエリア内の並び順とブランド順位が切り替わります。</div>${miss.length?`<div class="note">データ未登録：${miss.join("、")}</div>`:""}</div>`;$("area").innerHTML=h}
-function radar(series){const W=340,c=170,R=120,N=ITEMS.length,pt=(i,v)=>{const a=-Math.PI/2+2*Math.PI*i/N,r=R*Math.max(0,v-40)/60;return[c+r*Math.cos(a),c+r*Math.sin(a)]};
- let g="";[50,60,70,80,90,100].forEach(v=>g+=`<polygon points="${ITEMS.map((_,i)=>pt(i,v).join(",")).join(" ")}" fill="none" stroke="#ddd"/>`);
- ITEMS.forEach((t,i)=>{const[x,y]=pt(i,108);g+=`<text x="${x}" y="${y}" font-size="10" text-anchor="middle" dominant-baseline="middle">${t}</text>`});
- series.forEach(s=>g+=`<polygon points="${s.v.map((v,i)=>pt(i,v).join(",")).join(" ")}" fill="${s.f}" stroke="${s.c}" stroke-width="2" ${s.d?'stroke-dasharray="5 3"':""}/>`);
- return`<svg viewBox="0 0 ${W} ${W}" width="100%" style="max-width:380px">${g}</svg><div class="legend">${series.map(s=>`<span style="border:2px ${s.d?"dashed":"solid"} ${s.c}">${s.n}</span>`).join("")}</div><div class="note">目盛：40〜100点</div>`}
+ $("area").innerHTML=h+`</table></div><div class="note">見出しタップでエリア内の並び順とブランド順位が切り替わります。</div>${miss.length?`<div class="note">データ未登録：${miss.join("、")}</div>`:""}</div>`}
 let selStore=null;function openStore(n){selStore=n;document.querySelector('nav button[data-t="store"]').click()}
 function renderStore(S,P){if(!selStore||!S.st[selStore])selStore=S.rk[0];const d=S.st[selStore],s=d.s,p=P&&P.st[selStore]?P.st[selStore].s:null;
  let h=`<div class="box"><label>店舗：<select id="ss">${Object.keys(AREAS).map(a=>`<optgroup label="${a}">${AREAS[a].filter(n=>S.st[n]).map(n=>`<option ${n==selStore?"selected":""}>${n}</option>`).join("")}</optgroup>`).join("")}</select></label></div>`;
- h+=`<div class="cards"><div class="card"><small>総合</small><b>${s[0]}点</b><small>ブランド平均 ${f1(S.av[0])} / 前回比 ${diff(s[0],p&&p[0])}</small></div><div class="card"><small>ブランド順位</small><b>${S.inR[selStore]}位</b><small>/${S.names.length}店舗（全社 ${s[1]}位）</small></div><div class="card"><small>回答率</small><b>${s[2]}%</b><small>ブランド平均 ${f1(S.av[2])}%</small></div></div>`;
- h+=`<div class="box"><h3>項目別スコア</h3>${legend}<div class="tw sk1"><table class="dt"><tr><th style="width:110px">項目</th><th style="width:60px">自店舗</th><th>スコア（｜＝ブランド平均）</th><th style="width:80px">ブランド平均</th><th style="width:60px">平均差</th><th style="width:70px">ブランド順位</th>${p?`<th style="width:60px">前回</th><th style="width:60px">前回比</th>`:""}</tr>${ITEMS.map((t,i)=>{const k=i+3,v=s[k],a=S.av[k],rk=S.rankBy(k)[selStore],c=v-a<=-5?"#f08a4b":v<a?"#f2c94c":v-a>=5?"#2e9e5b":"#5b8def";return`<tr><td class="n"><b>${t}</b></td><td class="${cls(v,a)}" style="font-size:15px"><b>${v}</b></td><td><div class="bar"><div style="width:${v}%;background:${c}"></div><i style="left:${a}%"></i></div></td><td>${f1(a)}</td><td>${diff(v,a)}</td><td>${rk}位</td>${p?`<td>${p[k]}</td><td>${diff(v,p[k])}</td>`:""}</tr>`}).join("")}</table></div></div>`;
- h+=`<div class="box"><h3>愛されMVP</h3><div class="mvp">${d.l.map((m,i)=>`<div><b>${i+1}位 ${m[0]}</b>（${m[1]}票）</div>`).join("")}</div></div>
- <div class="box"><h3>リーダーシップMVP</h3><div class="mvp">${d.L.map((m,i)=>`<div><b>${i+1}位 ${m[0]}</b>（${m[1]}票）<ul>${m[2].split("／").map(c=>`<li>${c}</li>`).join("")}</ul></div>`).join("")}</div></div>`;
+ h+=`<div class="cards"><div class="card"><small>総合</small><b>${s[0]}点</b><small>ブランド平均 ${f1(S.av[0])} / 前回比 ${diff(s[0],p&&p[0])}</small></div><div class="card"><small>ブランド順位（総合）</small><b>${S.inR[selStore]}位</b><small>/${S.names.length}店舗${p?` ／ 前回 ${P.inR[selStore]}位`:""}</small></div><div class="card"><small>回答率</small><b>${s[2]}%</b><small>ブランド平均 ${f1(S.av[2])}%</small></div></div>`;
+ h+=`<div class="box"><h3>項目別スコア</h3>${legend}<div class="tw sk1"><table class="dt"><tr><th style="width:110px">項目</th><th style="width:60px">自店舗</th><th>スコア（｜＝ブランド平均）</th><th style="width:80px">ブランド平均</th><th style="width:60px">平均差</th><th style="width:70px">ブランド順位</th>${p?`<th style="width:60px">前回</th><th style="width:60px">前回比</th>`:""}</tr>${ITEMS.map((t,i)=>{const k=i+3,v=s[k],a=S.av[k],rk=S.rankBy(k)[selStore],c=v-a<=-5?"#f08a4b":v<a?"#f2c94c":v-a>=5?"#2e9e5b":"#5b8def";return`<tr><td class="n"><b>${QI(t)}</b></td><td class="${cls(v,a)}" style="font-size:15px"><b>${v}</b></td><td><div class="bar"><div style="width:${v}%;background:${c}"></div><i style="left:${a}%"></i></div></td><td>${f1(a)}</td><td>${diff(v,a)}</td><td>${rk}位</td>${p?`<td>${p[k]}</td><td>${diff(v,p[k])}</td>`:""}</tr>`}).join("")}</table></div></div>`;
+ h+=`<div class="box"><h3>愛されMVP</h3><div class="mvp">${d.l.map((m,i)=>`<div><b>${i+1}位 ${m[0]}</b>（${m[1]}票）</div>`).join("")}</div></div><div class="box"><h3>リーダーシップMVP</h3><div class="mvp">${d.L.map((m,i)=>`<div><b>${i+1}位 ${m[0]}</b>（${m[1]}票）<ul>${m[2].split("／").map(c=>`<li>${c}</li>`).join("")}</ul></div>`).join("")}</div></div>`;
  $("store").innerHTML=h;$("ss").onchange=e=>{selStore=e.target.value;render()}}
+let TH=5;
+function renderTend(S,P){const el=$("tend");if(!P){el.innerHTML='<div class="box">比較月を選択してください。</div>';return}
+ const IK=[0,...ITEMS.map((_,i)=>i+3)],ups=[],dns=[];
+ S.names.forEach(n=>{if(!P.st[n])return;const s=S.st[n].s,p=P.st[n].s;IK.forEach(i=>{const d=s[i]-p[i];if(Math.abs(d)>=TH)(d>0?ups:dns).push({n,a:areaOf(n),it:LAB(i),p:p[i],v:s[i],d})})});
+ ups.sort((a,b)=>b.d-a.d);dns.sort((a,b)=>a.d-b.d);
+ const cnt=(L,k)=>{const o={};L.forEach(x=>o[x[k]]=(o[x[k]]||0)+1);return Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>`${x[0]}（${x[1]}）`).join("、")||"-"};
+ const tbl=(L,c)=>L.length?`<div class="tw sk1"><table><tr><th>店舗</th><th>エリア</th><th>項目</th><th>${cmpM()}</th><th>${cur()}</th><th>増減</th></tr>${L.map((x,i)=>`<tr class="${i>=25?"px":""}"><td class="n">${x.n}</td><td>${x.a.replace("エリア","")}</td><td>${QI(x.it)}</td><td>${x.p}</td><td>${x.v}</td><td class="${c}"><b>${x.d>0?"▲":"▼"}${Math.abs(x.d)}</b></td></tr>`).join("")}</table></div>${L.length>25?`<div class="note ponly">※PDFは上位25件を表示（他${L.length-25}件は画面で確認）</div>`:""}`:'<div class="note">該当なし</div>';
+ el.innerHTML=`<div class="box"><h3>傾向（${cmpM()} → ${cur()}）</h3><label>ピックアップ基準：±<select id="th">${[3,5,8,10].map(v=>`<option ${v==TH?"selected":""}>${v}</option>`).join("")}</select>pt以上</label>
+ <div class="tw sk1" style="margin-top:8px"><table><tr><th>ブランド平均</th>${IK.map(k=>`<th>${LQ(k)}</th>`).join("")}</tr><tr><td>${cmpM()}</td>${IK.map(k=>`<td>${f1(P.av[k])}</td>`).join("")}</tr><tr><td>${cur()}</td>${IK.map(k=>`<td>${f1(S.av[k])}</td>`).join("")}</tr><tr><td>増減</td>${IK.map(k=>{const d=S.av[k]-P.av[k];return`<td class="${d>0?"up":d<0?"dn":""}"><b>${d>0?"▲":d<0?"▼":"±"}${f1(Math.abs(d))}</b></td>`}).join("")}</tr></table></div></div>
+ <div class="grid"><div class="box"><h3 style="border-color:#0a7a3d">上昇ピックアップ（${ups.length}件）</h3><div class="note">店舗別件数：${cnt(ups,"n")}<br>項目別件数：${cnt(ups,"it")}</div>${tbl(ups,"up")}</div>
+ <div class="box"><h3 style="border-color:#c62828">減少ピックアップ（${dns.length}件）</h3><div class="note">店舗別件数：${cnt(dns,"n")}<br>項目別件数：${cnt(dns,"it")}</div>${tbl(dns,"dn")}</div></div>
+ <div class="note">回答率は対象外。比較月にデータがない店舗は除外。</div>`;$("th").onchange=e=>{TH=+e.target.value;renderTend(S,P)}}
 let trendItem=0;
-function renderTrend(){const opts=[["総合",0],["回答率",2]].concat(ITEMS.map((t,i)=>[t,i+3]));
- const all=[...new Set(months.flatMap(m=>Object.keys(DATA[m].stores)))];const SS=months.map(stats);
- let h=`<div class="box"><h3>月別推移</h3><label>指標：<select id="ti">${opts.map(o=>`<option value="${o[1]}" ${o[1]==trendItem?"selected":""}>${o[0]}</option>`).join("")}</select></label>
- <div class="tw sk" style="margin-top:8px"><table><tr><th>エリア</th><th>店舗</th>${months.map(m=>`<th>${m}</th>`).join("")}<th>初回→最新</th></tr>
+function renderTrend(){const all=[...new Set(months.flatMap(m=>Object.keys(DATA[m].stores)))],SS=months.map(stats);
+ let h=`<div class="box"><h3>月別推移（${LQ(trendItem)}）</h3><label>指標：<select id="ti">${KEYS.map(k=>`<option value="${k}" ${k==trendItem?"selected":""}>${LAB(k)}</option>`).join("")}</select></label>
+ <div class="tw sk" style="margin-top:8px"><table><tr><th>エリア</th><th>店舗</th>${months.map(m=>`<th>${m}<br><small>値／ブランド順位</small></th>`).join("")}<th>初回→最新</th></tr>
  <tr class="avg"><td colspan="2">ブランド平均</td>${SS.map(S=>`<td>${f1(S.av[trendItem])}</td>`).join("")}<td>${months.length>1?diff(SS.at(-1).av[trendItem],SS[0].av[trendItem]):"-"}</td></tr>`;
- Object.keys(AREAS).forEach(a=>AREAS[a].filter(n=>all.includes(n)).forEach(n=>{const vals=months.map(m=>DATA[m].stores[n]?DATA[m].stores[n].s[trendItem]:null);const k=vals.filter(v=>v!=null);
-  h+=`<tr><td>${a.replace("エリア","")}</td><td class="n">${n}</td>${vals.map((v,j)=>`<td class="${v==null?"":cls(v,SS[j].av[trendItem])}">${v==null?"-":v}${j>0&&v!=null?"<br><small>"+diff(v,vals[j-1])+"</small>":""}</td>`).join("")}<td>${k.length>1?diff(k.at(-1),k[0]):"-"}</td></tr>`}));
- h+=`</table></div>${months.length<2?'<div class="note">現在は1か月分のみ登録。過去データを追加すると月別の推移・増減が表示されます。</div>':""}</div>`;
- $("trend").innerHTML=h;$("ti").onchange=e=>{trendItem=+e.target.value;renderTrend()}}
-function render(){const S=stats(cur()),P=cmpM()?stats(cmpM()):null;renderSum(S,P);renderArea(S,P);renderStore(S,P);renderTrend();renderTend(S,P)}
+ Object.keys(AREAS).forEach(a=>AREAS[a].filter(n=>all.includes(n)).forEach(n=>{const vals=months.map(m=>DATA[m].stores[n]?DATA[m].stores[n].s[trendItem]:null),k=vals.filter(v=>v!=null);
+  h+=`<tr><td>${a.replace("エリア","")}</td><td class="n">${n}</td>${vals.map((v,j)=>`<td class="${v==null?"":cls(v,SS[j].av[trendItem])}">${v==null?"-":`<b>${v}</b> <small>(${SS[j].rankBy(trendItem)[n]}位)</small>`}${j>0&&v!=null?"<br><small>"+diff(v,vals[j-1])+"</small>":""}</td>`).join("")}<td>${k.length>1?diff(k.at(-1),k[0]):"-"}</td></tr>`}));
+ $("trend").innerHTML=h+`</table></div></div>`;$("ti").onchange=e=>{trendItem=+e.target.value;renderTrend()}}
+
+let arKey=0;
+function renderARank(S,P){const IK=[0,...ITEMS.map((_,i)=>i+3)];
+ const calc=(X,k)=>{const r=[];Object.keys(AREAS).forEach(a=>{const g=AREAS[a].filter(n=>X.st[n]);if(g.length)r.push({a,g,v:avg(g.map(n=>X.st[n].s[k]))})});r.sort((x,y)=>y.v-x.v);r.forEach(x=>x.r=1+r.filter(y=>y.v>x.v+1e-9).length);return r};
+ const R=calc(S,arKey),PR=P?calc(P,arKey):[],pm={};PR.forEach(x=>pm[x.a]=x);const av=S.av[arKey];
+ const mx=Math.max(...R.map(x=>x.v)),mn=Math.min(...R.map(x=>x.v)),lo=Math.max(0,Math.floor(mn-8));
+ let h=`<div class="box"><h3>エリアランキング（${cur()}${P?` ／ 比較：${cmpM()}`:""}）</h3><div class="chips">${IK.map(k=>`<button class="${k==arKey?"on":""}" onclick="arKey=${k};render()">${LQ(k)}</button>`).join("")}</div>
+ <div class="tw sk1"><table><tr><th>順位</th><th>エリア</th><th>${LQ(arKey)}平均</th><th style="min-width:120px">スコア（｜＝ブランド平均）</th><th>ブランド平均差</th>${P?"<th>前回</th><th>前回比</th><th>前回順位</th>":""}<th>店舗内訳（${LAB(arKey)}）</th></tr>`;
+ R.forEach(x=>{const p=pm[x.a],w=(v)=>((v-lo)/(100-lo)*100).toFixed(1),c=x.v-av>=0?"#2e9e5b":"#f08a4b";
+  const mem=[...x.g].sort((a,b)=>S.st[b].s[arKey]-S.st[a].s[arKey]).map(n=>{const v=S.st[n].s[arKey];return`<span class="${cls(v,av)}" style="padding:0 3px;border-radius:3px">${n.replace("CONA","")} ${v}</span>`}).join("　");
+  h+=`<tr class="${x.r==1?"rk1":""}"><td><span class="medal ${x.r<=3?"m"+x.r:""}">${x.r}</span></td><td class="n"><b>${x.a}</b><br><small>${x.g.length}店舗</small></td><td style="font-size:16px"><b>${f1(x.v)}</b></td><td><div class="bar"><div style="width:${w(x.v)}%;background:${c}"></div><i style="left:${w(av)}%"></i></div></td><td>${diff(x.v,av)}</td>${P?`<td>${p?f1(p.v):"-"}</td><td>${p?diff(x.v,p.v):"-"}</td><td>${p?`${p.r}位 ${p.r>x.r?'<span class="up">↑</span>':p.r<x.r?'<span class="dn">↓</span>':"→"}`:"-"}</td>`:""}<td class="mem">${mem}</td></tr>`});
+ h+=`</table></div><div class="note">エリア平均＝担当エリア内の登録店舗の単純平均。ブランド平均 ${f1(av)}${arKey==2?"%":""}。項目ボタンで切り替え。</div></div>`;
+ const all=IK.map(k=>calc(S,k)),cell=(k,a)=>{const r=all[IK.indexOf(k)].find(x=>x.a==a);return r?`<td class="${r.r==1?"hi":""}">${r.r}位<br><small>${f1(r.v)}</small></td>`:"<td>-</td>"};
+ h+=`<div class="box"><h3>項目別エリア順位一覧</h3><div class="tw sk1"><table><tr><th>エリア</th>${IK.map(k=>`<th>${LQ(k)}</th>`).join("")}</tr>${R.map(x=>`<tr><td class="n"><b>${x.a}</b></td>${IK.map(k=>cell(k,x.a)).join("")}</tr>`).join("")}</table></div></div>`;
+ $("arank").innerHTML=h}
+
+const TABS=["sum","area","store","tend","trend","arank"];
+const TN={sum:"全体サマリー",area:"エリア別",store:"店舗詳細",tend:"傾向",trend:"推移比較",arank:"エリアランキング"};
+const ORI={store:"P"};
+const curTab=()=>document.querySelector("nav button.on").dataset.t;
+const PG={L:[1020,660],P:[700,985]};
+function printTabs(list){hideQ();render();document.body.classList.add("pm");
+ list.forEach(id=>{const el=$(id),o=ORI[id]||"L",[W,H]=PG[o];el.dataset.o=o;el.classList.add("pr");
+  const sub=id=="store"?selStore:id=="trend"?"指標："+LAB(trendItem):id=="arank"?"項目："+LAB(arKey):id=="tend"?`${cmpM()}→${cur()}／基準±${TH}pt`:"";
+  el.insertAdjacentHTML("afterbegin",`<div class="ph"><b>カンテラゲージ（ES） ${TN[id]}${sub?"　"+sub:""}</b><span>対象：${cur()}${cmpM()?"／比較："+cmpM():""}</span></div>`);
+  el.querySelectorAll("label").forEach(l=>{if(l.querySelector("select"))l.classList.add("noprint")});
+  el.style.zoom=1;el.style.width=W+"px";let z=1;
+  for(let k=0;k<4;k++){const sw=Math.max(el.scrollWidth,W),w=parseFloat(el.style.width);if(sw>w){el.style.width=sw+"px"}
+   const ww=parseFloat(el.style.width),h=el.scrollHeight;z=Math.min(1,W/ww,H/h);
+   const tw=W/z;if(Math.abs(tw-ww)<4)break;el.style.width=Math.max(W,Math.min(tw,W/0.5))+"px"}
+  z=Math.min(1,W/parseFloat(el.style.width),H/el.scrollHeight);if(z>=1){let u=Math.min(1.3,W/680,H/el.scrollHeight);el.style.width=(W/u)+"px";for(let k=0;k<3;k++){u=Math.min(1.3,W/680,H/el.scrollHeight,W/Math.max(el.scrollWidth,W/u));el.style.width=(W/u)+"px"}z=Math.min(u,H/el.scrollHeight)*0.99}el.style.zoom=Math.max(z,0.5).toFixed(3)});
+ setTimeout(()=>window.print(),80)}
+window.addEventListener("afterprint",()=>{document.body.classList.remove("pm");TABS.forEach(id=>{const el=$(id);el.classList.remove("pr");el.style.zoom="";el.style.width="";el.removeAttribute("data-o")});render()});
+function render(){const S=stats(cur()),P=cmpM()?stats(cmpM()):null;renderSum(S,P);renderArea(S,P);renderStore(S,P);renderTend(S,P);renderTrend();renderARank(S,P)}
 months.forEach(m=>$("month").add(new Option(m,m)));$("month").value=months.at(-1);
 function fillCmp(){const c=$("cmp");c.innerHTML="";c.add(new Option("なし",""));months.filter(m=>m<cur()).reverse().forEach(m=>c.add(new Option(m,m)));if(c.options.length>1)c.selectedIndex=1}
 fillCmp();$("month").onchange=()=>{fillCmp();render()};$("cmp").onchange=render;
