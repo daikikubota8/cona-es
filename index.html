@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>カンテラゲージ(ES)ダッシュボード</title>
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>カンテラゲージ(ES)ダッシュボード</title>
 <style>
 *{box-sizing:border-box}body{font-family:"Hiragino Sans","Yu Gothic","Meiryo",sans-serif;margin:0;background:#f4f6f9;color:#222;font-size:13px}
 header{background:#1f3a5f;color:#fff;padding:12px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
@@ -16,11 +16,39 @@ td.n{text-align:left}tr.avg td{background:#1f3a5f;color:#fff;font-weight:bold}tr
 .legend span{display:inline-block;padding:2px 8px;margin-right:6px;border-radius:4px;font-size:11px}
 .bar{position:relative;height:14px;background:#eef1f5;border-radius:7px}.bar div{height:100%;border-radius:7px}.bar i{position:absolute;top:-3px;bottom:-3px;width:2px;background:#1f3a5f}.dt td{padding:7px 6px}.note{font-size:11px;color:#666;margin-top:6px}
 @media print{header select,header button,nav{display:none}.sec{display:block!important;page-break-after:always}body{background:#fff;font-size:10px}main{padding:0}.box,.card{box-shadow:none;border:1px solid #ddd}@page{size:A4 landscape;margin:8mm}th,td{padding:2px 3px}}
+
+.top{position:sticky;top:0;z-index:20;box-shadow:0 2px 6px #0002}.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+nav{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}nav button{white-space:nowrap;flex:0 0 auto}
+.tw{overflow:auto;max-height:72vh;-webkit-overflow-scrolling:touch;border-radius:6px}
+.tw table{border-collapse:separate;border-spacing:0}.tw th,.tw td{border:0;border-right:1px solid #dde2ea;border-bottom:1px solid #dde2ea}
+.tw th{position:sticky;top:0;z-index:3}
+.sk tr>*:nth-child(1){position:sticky;left:0;z-index:2;min-width:46px;width:46px}
+.sk tr:not(.avg):not(.area)>*:nth-child(2){position:sticky;left:46px;z-index:2;min-width:118px;box-shadow:2px 0 3px #0001}
+.sk1 tr>*:nth-child(1){position:sticky;left:0;z-index:2;box-shadow:2px 0 3px #0001}
+.sk tr:not(.avg):not(.area)>td:nth-child(-n+2),.sk1 td:first-child{background:#fff}
+.sk tr.avg>td:first-child{background:#1f3a5f}.sk tr.area>td:first-child{background:#e8eef7}
+.tw tr>th:nth-child(-n+2){z-index:4}.sk1 tr>th:first-child{z-index:4}
+tr:not(.avg):not(.area):hover td{filter:brightness(.97)}
+a{color:#1e63d6;text-decoration:none;font-weight:bold}
+@media (max-width:700px){
+ body{font-size:12px}header{padding:8px 10px;gap:6px}header h1{font-size:15px;width:100%}
+ .ctl{width:100%;gap:6px}.ctl label{flex:1;display:flex;flex-direction:column;font-size:10px}.ctl select{width:100%;padding:6px}.ctl button{padding:8px 10px}
+ nav{padding:6px 8px 0}nav button{padding:9px 14px;font-size:13px}
+ main{padding:8px}.box{padding:8px;border-radius:8px}h3{font-size:14px}
+ .cards{display:grid;grid-template-columns:1fr 1fr;gap:6px}.card{min-width:0;padding:8px 10px}.card b{font-size:18px}.card small{font-size:10px;display:block;line-height:1.35}
+ .grid{grid-template-columns:1fr}.mvp{flex-direction:column}
+ th,td{padding:5px 4px;font-size:11px}th{font-size:10px;white-space:normal;min-width:44px}
+ .sk tr:not(.avg):not(.area)>*:nth-child(2){min-width:96px;max-width:96px;white-space:normal;font-size:11px}
+ .dt tr>*:nth-child(4),.dt tr>*:nth-child(7){display:none}.dt tr>*:nth-child(3){min-width:90px}.dt td{padding:8px 4px}
+ .legend span{margin:2px 3px 2px 0}.tw{max-height:68vh}
+ #ss{width:100%;padding:8px;font-size:14px}.box label{display:block}
+}
+@media print{.top{position:static;box-shadow:none}.tw{max-height:none;overflow:visible}.tw th,.sk *,.sk1 *{position:static!important}}
 </style></head><body>
-<header><h1>カンテラゲージ（ES）ダッシュボード</h1>
-<label>対象月 <select id="month"></select></label><label>比較月 <select id="cmp"></select></label>
-<button onclick="window.print()">PDF出力</button></header>
-<nav><button data-t="sum" class="on">全体サマリー</button><button data-t="area">エリア別</button><button data-t="store">店舗詳細</button><button data-t="tend">傾向</button><button data-t="trend">推移比較</button></nav>
+<div class="top"><header><h1>カンテラゲージ（ES）ダッシュボード</h1>
+<div class="ctl"><label>対象月 <select id="month"></select></label><label>比較月 <select id="cmp"></select></label>
+<button onclick="window.print()">PDF出力</button></div></header>
+<nav><button data-t="sum" class="on">全体サマリー</button><button data-t="area">エリア別</button><button data-t="store">店舗詳細</button><button data-t="tend">傾向</button><button data-t="trend">推移比較</button></nav></div>
 <main>
 <div id="sum" class="sec on"></div><div id="area" class="sec"></div><div id="store" class="sec"></div><div id="tend" class="sec"></div><div id="trend" class="sec"></div>
 </main>
@@ -102,9 +130,9 @@ function renderTend(S,P){const el=$("tend");if(!P){el.innerHTML='<div class="box
  ups.sort((a,b)=>b.d-a.d);dns.sort((a,b)=>a.d-b.d);
  const bi=[0,...ITEMS.map((_,i)=>i+3)].map(i=>({it:lab[i],p:P.av[i],v:S.av[i],d:S.av[i]-P.av[i]}));
  const cnt=(L,k)=>{const o={};L.forEach(x=>o[x[k]]=(o[x[k]]||0)+1);return Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>`${x[0]}（${x[1]}）`).join("、")||"-"};
- const tbl=(L,c)=>L.length?`<table><tr><th>店舗</th><th>エリア</th><th>項目</th><th>${cmpM()}</th><th>${cur()}</th><th>増減</th></tr>${L.map(x=>`<tr><td class="n">${x.n}</td><td>${x.a.replace("エリア","")}</td><td>${x.it}</td><td>${x.p}</td><td>${x.v}</td><td class="${c}"><b>${x.d>0?"▲":"▼"}${Math.abs(x.d)}</b></td></tr>`).join("")}</table>`:'<div class="note">該当なし</div>';
+ const tbl=(L,c)=>L.length?`<div class="tw sk1"><table><tr><th>店舗</th><th>エリア</th><th>項目</th><th>${cmpM()}</th><th>${cur()}</th><th>増減</th></tr>${L.map(x=>`<tr><td class="n">${x.n}</td><td>${x.a.replace("エリア","")}</td><td>${x.it}</td><td>${x.p}</td><td>${x.v}</td><td class="${c}"><b>${x.d>0?"▲":"▼"}${Math.abs(x.d)}</b></td></tr>`).join("")}</table></div>`:'<div class="note">該当なし</div>';
  el.innerHTML=`<div class="box"><h3>傾向（${cmpM()} → ${cur()}）</h3><label>ピックアップ基準：±<select id="th">${[3,5,8,10].map(v=>`<option ${v==TH?"selected":""}>${v}</option>`).join("")}</select>pt以上</label>
- <table style="margin-top:8px"><tr><th>ブランド平均</th>${bi.map(x=>`<th>${x.it}</th>`).join("")}</tr><tr><td>${cmpM()}</td>${bi.map(x=>`<td>${f1(x.p)}</td>`).join("")}</tr><tr><td>${cur()}</td>${bi.map(x=>`<td>${f1(x.v)}</td>`).join("")}</tr><tr><td>増減</td>${bi.map(x=>`<td class="${x.d>0?"up":x.d<0?"dn":""}"><b>${x.d>0?"▲":x.d<0?"▼":"±"}${f1(Math.abs(x.d))}</b></td>`).join("")}</tr></table></div>
+ <div class="tw sk1" style="margin-top:8px"><table><tr><th>ブランド平均</th>${bi.map(x=>`<th>${x.it}</th>`).join("")}</tr><tr><td>${cmpM()}</td>${bi.map(x=>`<td>${f1(x.p)}</td>`).join("")}</tr><tr><td>${cur()}</td>${bi.map(x=>`<td>${f1(x.v)}</td>`).join("")}</tr><tr><td>増減</td>${bi.map(x=>`<td class="${x.d>0?"up":x.d<0?"dn":""}"><b>${x.d>0?"▲":x.d<0?"▼":"±"}${f1(Math.abs(x.d))}</b></td>`).join("")}</tr></table></div></div>
  <div class="grid"><div class="box"><h3 style="border-color:#0a7a3d">上昇ピックアップ（${ups.length}件）</h3><div class="note">店舗別件数：${cnt(ups,"n")}<br>項目別件数：${cnt(ups,"it")}</div>${tbl(ups,"up")}</div>
  <div class="box"><h3 style="border-color:#c62828">減少ピックアップ（${dns.length}件）</h3><div class="note">店舗別件数：${cnt(dns,"n")}<br>項目別件数：${cnt(dns,"it")}</div>${tbl(dns,"dn")}</div></div>
  <div class="note">回答率は対象外。比較月にデータがない店舗は除外。</div>`;
@@ -117,9 +145,9 @@ function renderSum(S,P){const n=S.names.length;const best=S.rk[0],worst=S.rk[n-1
  const itemAv=ITEMS.map((t,i)=>[t,S.av[i+3]]).sort((a,b)=>a[1]-b[1]);
  const sorted=[...S.names].sort((a,b)=>S.st[b].s[sortKey]-S.st[a].s[sortKey]);
  let h=`<div class="cards"><div class="card"><small>対象店舗数</small><b>${n}店舗</b></div><div class="card"><small>ブランド平均（総合）</small><b>${f1(S.av[0])}点</b>${P?`<small>前回 ${f1(P.av[0])} ${diff(S.av[0],P.av[0])}</small>`:""}</div><div class="card"><small>平均回答率</small><b>${f1(S.av[2])}%</b></div><div class="card"><small>最高</small><b>${S.st[best].s[0]}点</b><small>${best}</small></div><div class="card"><small>最低</small><b>${S.st[worst].s[0]}点</b><small>${worst}</small></div><div class="card"><small>平均が最も低い項目</small><b>${itemAv[0][0]}</b><small>${f1(itemAv[0][1])}点 / 次点 ${itemAv[1][0]} ${f1(itemAv[1][1])}点</small></div></div>`;
- h+=`<div class="box"><h3>店舗別スコア一覧（${cur()}${P?` ／ 比較：${cmpM()}`:""}）</h3>${legend}<div style="overflow-x:auto"><table>${head()}${avgRow("ブランド平均",S,S.names)}${sorted.map(x=>row(x,S,P)).join("")}</table></div><div class="note">見出し（総合・回答率・各項目）クリックで並び替え。全社順位は全体店舗数（4月80・7月82）中の参考値。</div></div>`;
+ h+=`<div class="box"><h3>店舗別スコア一覧（${cur()}${P?` ／ 比較：${cmpM()}`:""}）</h3>${legend}<div class="tw sk"><table>${head()}${avgRow("ブランド平均",S,S.names)}${sorted.map(x=>row(x,S,P)).join("")}</table></div><div class="note">見出し（総合・回答率・各項目）クリックで並び替え。全社順位は全体店舗数（4月80・7月82）中の参考値。</div></div>`;
  $("sum").innerHTML=h}
-function renderArea(S,P){let h=`<div class="box"><h3>エリア別スコア（${cur()}）</h3>${legend}<div style="overflow-x:auto"><table>${head()}${avgRow("ブランド平均",S,S.names)}`;
+function renderArea(S,P){let h=`<div class="box"><h3>エリア別スコア（${cur()}）</h3>${legend}<div class="tw sk"><table>${head()}${avgRow("ブランド平均",S,S.names)}`;
  const groups={};S.names.forEach(n=>(groups[areaOf(n)]=groups[areaOf(n)]||[]).push(n));
  Object.keys(AREAS).concat(["未分類"]).forEach(a=>{const g=groups[a];if(!g)return;g.sort((x,y)=>S.st[y].s[sortKey]-S.st[x].s[sortKey]);
   const ga=i=>avg(g.map(n=>S.st[n].s[i]));h+=`<tr class="area"><td colspan="3">${a}（${g.length}店舗）平均</td><td class="${cls(ga(0),S.av[0])}">${f1(ga(0))}</td><td></td><td></td><td>${f1(ga(2))}%</td>${ITEMS.map((_,i)=>`<td class="${cls(ga(i+3),S.av[i+3])}">${f1(ga(i+3))}</td>`).join("")}</tr>`+g.map(x=>row(x,S,P)).join("")});
@@ -134,7 +162,7 @@ let selStore=null;function openStore(n){selStore=n;document.querySelector('nav b
 function renderStore(S,P){if(!selStore||!S.st[selStore])selStore=S.rk[0];const d=S.st[selStore],s=d.s,p=P&&P.st[selStore]?P.st[selStore].s:null;
  let h=`<div class="box"><label>店舗：<select id="ss">${Object.keys(AREAS).map(a=>`<optgroup label="${a}">${AREAS[a].filter(n=>S.st[n]).map(n=>`<option ${n==selStore?"selected":""}>${n}</option>`).join("")}</optgroup>`).join("")}</select></label></div>`;
  h+=`<div class="cards"><div class="card"><small>総合</small><b>${s[0]}点</b><small>ブランド平均 ${f1(S.av[0])} / 前回比 ${diff(s[0],p&&p[0])}</small></div><div class="card"><small>ブランド順位</small><b>${S.inR[selStore]}位</b><small>/${S.names.length}店舗（全社 ${s[1]}位）</small></div><div class="card"><small>回答率</small><b>${s[2]}%</b><small>ブランド平均 ${f1(S.av[2])}%</small></div></div>`;
- h+=`<div class="box"><h3>項目別スコア</h3>${legend}<table class="dt"><tr><th style="width:110px">項目</th><th style="width:60px">自店舗</th><th>スコア（｜＝ブランド平均）</th><th style="width:80px">ブランド平均</th><th style="width:60px">平均差</th><th style="width:70px">ブランド順位</th>${p?`<th style="width:60px">前回</th><th style="width:60px">前回比</th>`:""}</tr>${ITEMS.map((t,i)=>{const k=i+3,v=s[k],a=S.av[k],rk=S.rankBy(k)[selStore],c=v-a<=-5?"#f08a4b":v<a?"#f2c94c":v-a>=5?"#2e9e5b":"#5b8def";return`<tr><td class="n"><b>${t}</b></td><td class="${cls(v,a)}" style="font-size:15px"><b>${v}</b></td><td><div class="bar"><div style="width:${v}%;background:${c}"></div><i style="left:${a}%"></i></div></td><td>${f1(a)}</td><td>${diff(v,a)}</td><td>${rk}位</td>${p?`<td>${p[k]}</td><td>${diff(v,p[k])}</td>`:""}</tr>`}).join("")}</table></div>`;
+ h+=`<div class="box"><h3>項目別スコア</h3>${legend}<div class="tw sk1"><table class="dt"><tr><th style="width:110px">項目</th><th style="width:60px">自店舗</th><th>スコア（｜＝ブランド平均）</th><th style="width:80px">ブランド平均</th><th style="width:60px">平均差</th><th style="width:70px">ブランド順位</th>${p?`<th style="width:60px">前回</th><th style="width:60px">前回比</th>`:""}</tr>${ITEMS.map((t,i)=>{const k=i+3,v=s[k],a=S.av[k],rk=S.rankBy(k)[selStore],c=v-a<=-5?"#f08a4b":v<a?"#f2c94c":v-a>=5?"#2e9e5b":"#5b8def";return`<tr><td class="n"><b>${t}</b></td><td class="${cls(v,a)}" style="font-size:15px"><b>${v}</b></td><td><div class="bar"><div style="width:${v}%;background:${c}"></div><i style="left:${a}%"></i></div></td><td>${f1(a)}</td><td>${diff(v,a)}</td><td>${rk}位</td>${p?`<td>${p[k]}</td><td>${diff(v,p[k])}</td>`:""}</tr>`}).join("")}</table></div></div>`;
  h+=`<div class="box"><h3>愛されMVP</h3><div class="mvp">${d.l.map((m,i)=>`<div><b>${i+1}位 ${m[0]}</b>（${m[1]}票）</div>`).join("")}</div></div>
  <div class="box"><h3>リーダーシップMVP</h3><div class="mvp">${d.L.map((m,i)=>`<div><b>${i+1}位 ${m[0]}</b>（${m[1]}票）<ul>${m[2].split("／").map(c=>`<li>${c}</li>`).join("")}</ul></div>`).join("")}</div></div>`;
  $("store").innerHTML=h;$("ss").onchange=e=>{selStore=e.target.value;render()}}
@@ -142,7 +170,7 @@ let trendItem=0;
 function renderTrend(){const opts=[["総合",0],["回答率",2]].concat(ITEMS.map((t,i)=>[t,i+3]));
  const all=[...new Set(months.flatMap(m=>Object.keys(DATA[m].stores)))];const SS=months.map(stats);
  let h=`<div class="box"><h3>月別推移</h3><label>指標：<select id="ti">${opts.map(o=>`<option value="${o[1]}" ${o[1]==trendItem?"selected":""}>${o[0]}</option>`).join("")}</select></label>
- <div style="overflow-x:auto;margin-top:8px"><table><tr><th>エリア</th><th>店舗</th>${months.map(m=>`<th>${m}</th>`).join("")}<th>初回→最新</th></tr>
+ <div class="tw sk" style="margin-top:8px"><table><tr><th>エリア</th><th>店舗</th>${months.map(m=>`<th>${m}</th>`).join("")}<th>初回→最新</th></tr>
  <tr class="avg"><td colspan="2">ブランド平均</td>${SS.map(S=>`<td>${f1(S.av[trendItem])}</td>`).join("")}<td>${months.length>1?diff(SS.at(-1).av[trendItem],SS[0].av[trendItem]):"-"}</td></tr>`;
  Object.keys(AREAS).forEach(a=>AREAS[a].filter(n=>all.includes(n)).forEach(n=>{const vals=months.map(m=>DATA[m].stores[n]?DATA[m].stores[n].s[trendItem]:null);const k=vals.filter(v=>v!=null);
   h+=`<tr><td>${a.replace("エリア","")}</td><td class="n">${n}</td>${vals.map((v,j)=>`<td class="${v==null?"":cls(v,SS[j].av[trendItem])}">${v==null?"-":v}${j>0&&v!=null?"<br><small>"+diff(v,vals[j-1])+"</small>":""}</td>`).join("")}<td>${k.length>1?diff(k.at(-1),k[0]):"-"}</td></tr>`}));
