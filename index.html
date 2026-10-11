@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>カンテラゲージ(ES)ダッシュボード</title>
+<style>
+*{box-sizing:border-box}body{font-family:"Hiragino Sans","Yu Gothic","Meiryo",sans-serif;margin:0;background:#f4f6f9;color:#222;font-size:13px}
+header{background:#1f3a5f;color:#fff;padding:12px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;flex:1}select,button{font-size:13px;padding:5px 8px;border-radius:6px;border:1px solid #ccc}
+nav{display:flex;gap:4px;padding:8px 20px 0;background:#e3e8ef;flex-wrap:wrap}nav button{border:none;border-radius:8px 8px 0 0;padding:8px 16px;background:#cfd8e3;cursor:pointer}nav button.on{background:#fff;font-weight:bold}
+main{padding:14px 20px}.sec{display:none}.sec.on{display:block}
+.cards{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.card{background:#fff;border-radius:10px;padding:10px 16px;box-shadow:0 1px 3px #0001;min-width:140px}.card b{font-size:22px;display:block}.card small{color:#666}
+.box{background:#fff;border-radius:10px;padding:12px;box-shadow:0 1px 3px #0001;margin-bottom:12px}
+h3{margin:0 0 8px;font-size:15px;border-left:4px solid #1f3a5f;padding-left:8px}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #dde2ea;padding:4px 5px;text-align:center;white-space:nowrap}th{background:#eef2f7;font-size:12px}
+td.n{text-align:left}tr.avg td{background:#1f3a5f;color:#fff;font-weight:bold}tr.area td{background:#e8eef7;font-weight:bold;text-align:left}
+.lo{background:#ffe9a8}.vlo{background:#f8c08f;font-weight:bold}.hi{color:#0a7a3d;font-weight:bold}
+.up{color:#0a7a3d}.dn{color:#c62828}.th-sort{cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mvp{display:flex;gap:8px}.mvp>div{flex:1;background:#f7f9fc;border-radius:8px;padding:8px}.mvp ul{margin:4px 0 0;padding-left:16px;font-size:11px;color:#444}
+.legend span{display:inline-block;padding:2px 8px;margin-right:6px;border-radius:4px;font-size:11px}
+.bar{position:relative;height:14px;background:#eef1f5;border-radius:7px}.bar div{height:100%;border-radius:7px}.bar i{position:absolute;top:-3px;bottom:-3px;width:2px;background:#1f3a5f}.dt td{padding:7px 6px}.note{font-size:11px;color:#666;margin-top:6px}
+@media print{header select,header button,nav{display:none}.sec{display:block!important;page-break-after:always}body{background:#fff;font-size:10px}main{padding:0}.box,.card{box-shadow:none;border:1px solid #ddd}@page{size:A4 landscape;margin:8mm}th,td{padding:2px 3px}}
+</style></head><body>
+<header><h1>カンテラゲージ（ES）ダッシュボード</h1>
+<label>対象月 <select id="month"></select></label><label>比較月 <select id="cmp"></select></label>
+<button onclick="window.print()">PDF出力</button></header>
+<nav><button data-t="sum" class="on">全体サマリー</button><button data-t="area">エリア別</button><button data-t="store">店舗詳細</button><button data-t="tend">傾向</button><button data-t="trend">推移比較</button></nav>
+<main>
+<div id="sum" class="sec on"></div><div id="area" class="sec"></div><div id="store" class="sec"></div><div id="tend" class="sec"></div><div id="trend" class="sec"></div>
+</main>
+<script>
+const ITEMS=["人間関係","環境","教育","理念浸透","ルール","成長・やりがい","リファラル","クオリティ","サービス","クリンリネス"];
+const AREAS={"吉川エリア":["CONA川崎","CONA蒲田","CONA京急蒲田","CONA横浜鶴屋町","CONA横浜西口","CONA平塚"],"岩本エリア":["CONA大宮","CONA西新宿一丁目","CONA新宿東南口","CONA恵比寿","CONA麻布十番","CONA立川","CONA歌舞伎町"],"青山エリア":["CONA柏","CONA船橋"],"堀江エリア":["CONA渋谷宇田川町","CONA錦糸町","CONA所沢"],"牧田エリア":["CONAたまプラーザ","CONA町田","CONA溝の口","ナポリマンあざみ野"],"見越エリア":["CONA上野","CONA津田沼","CONA田町芝浦"]};
+// ===== データ：月を追加する場合は "YYYY-MM": {...} を追記 =====
+// s:[総合,全社順位,回答率, 10項目...]  l:愛されMVP [名前,票]  L:リーダーシップMVP [名前,票,コメント]
+const DATA={
+"2026-04":{total:80,stores:{
+"ナポリマンあざみ野":{s:[84,20,83,93,78,86,82,87,90,88,76,81,80],l:[["大塚 一成",5],["関戸 彩華",5],["岩田 江梨花",3]],L:[["関戸 彩華",7,"周りを見て行動しみんなをまとめる／どのポジションでも指示をくれる／新人への教え方が上手"],["羽太 茉白",4,"ドリンクをしながら全体を見てホールやピザ場を手伝う／貫禄がある"],["大塚 一成",4,"周りを見て指示を出す／後輩に常にアドバイス、誰よりも声出し"]]},
+"CONA横浜西口":{s:[75,62,13,82,68,80,73,83,78,70,65,69,80],l:[["磯田 直瑠",2],["大塚 百桃",1],["梅田 真衣",1]],L:[["磯田 直瑠",2,"指示力・周りを見る力に長けている／教えてもらった"],["大塚 百桃",1,"業態変更前にエクセレントスタッフに選ばれていた"],["梅田 真衣",1,"研修で進んで料理を運んでいた"]]},
+"CONA恵比寿":{s:[82,32,83,90,77,78,83,82,83,75,77,82,90],l:[["亀井 由衣",2],["青山 仁心",2],["内山 奨也",1]],L:[["亀井 由衣",4,"接客から後輩教育まで完璧で信頼されている／アルバイトをまとめてくれる"],["内山 奨也",1,"一番歴が長い"]]},
+"CONAたまプラーザ":{s:[81,38,63,88,74,85,82,83,78,75,77,83,81],l:[["小川 柚比",11],["石岡 白琥",2],["吉村 岬",1]],L:[["細野 旭",7,"最年長／仕事ができ視野が広い／ピザ場から全体を見て指示出し"],["小川 柚比",5,"歴が長く何でもできる／指導面もしっかり、フォローが手厚い"],["中江 優月",1,"シフトが被った際に沢山助けてくれた／安心感がある"]]},
+"CONA新宿東南口":{s:[65,77,46,76,53,66,68,63,60,58,61,69,72],l:[["川田 咲也",8],["松浦 ひなた",5],["原田 悠亜",1]],L:[["松浦 ひなた",13,"教えてくれた／周りを見て指示、忙しいと声をかけてくれる／頼りやすい"],["永江 悠貴",2,"様々な仕事を進んでやる／年齢関係なく指示出しできる"],["原田 悠亜",1,"ホールキッチン関係なく指示が出せ、自分からも行動できる"]]},
+"CONA上野":{s:[79,44,62,90,78,81,77,85,85,82,73,79,64],l:[["高原 美晴",6],["有賀 文乃",2],["相場 航太",1]],L:[["高原 美晴",7,"やることを指示してくれる／周りをよく見て行動／的確な指示"],["曽我 美月",2,"わからない時にいつも教えてくれる／献身的に仕事を探す姿勢"],["石川 和也",2,"ホールの基礎を分かりやすく教えてくれた"]]},
+"CONA川崎":{s:[81,39,88,86,78,81,82,88,83,76,74,83,74],l:[["森田 姫輝",9],["鈴木 栞太",8],["中山 紅葉",2]],L:[["金井 悠",15,"周りが見えて的確な指示／時間管理が完璧でキッチンとも連携／フォロー先への指示出し"],["数 空大",2,"売上目標を意識し周囲に良い影響／周りをよく見ている"],["塚田 桜大",2,"状況把握とフォローで皆を支える／伝え方を試行錯誤する姿勢"]]},
+"CONA歌舞伎町":{s:[58,80,42,50,53,66,61,64,51,42,69,63,57],l:[["花岡 はるの",2],["有田 壮志",1],["天野 未来",1]],L:[["花岡 はるの",4,"指示をよく出す／営業の始めから終わりまで考えている／常に店全体を見守る"],["野口 和馬",1,"全てにおいて考案してくれる"]]},
+"CONA所沢":{s:[82,30,60,89,80,85,80,87,84,75,78,78,83],l:[["下川 紗英",4],["石山 愛夏",2],["小林 萌々花",2]],L:[["佐々木 悠月",9,"何でもこなし優しく教えてくれる／ドリンクやサイドもこなす／困っているスタッフをすぐサポート"],["小林 萌々花",2,"丁寧な接客と新人教育／営業管理能力と責任感が高い"],["下川 紗英",1,"コミュニケーション能力が高く指示が上手、周りも見えている"]]},
+"CONA渋谷宇田川町":{s:[77,54,67,76,77,76,78,79,76,74,78,81,70],l:[["柴田 妃夏",4],["菊森 秋季子",2],["大久保 結愛",2]],L:[["菊森 秋季子",10,"困った時に指示やポジション交代をしてくれる／頼りになり接客感も高い／タイマー管理と指示出し"]]},
+"CONA大宮":{s:[87,12,83,92,89,88,86,91,91,87,77,87,79],l:[["鎌田 心雪",7],["武永 あかり",4],["冨士原 茉友",2]],L:[["鎌田 心雪",14,"声が大きくハキハキ、時間管理／キッチンもホールもテキパキ、周りに声かけ"],["田島 智竜",5,"ドリンクをしながら時間管理やお客様に気を配る／元社員の経験を活かした指示出し"],["下屋敷 充翔",1,"いない"]]},
+"CONA蒲田":{s:[66,74,70,74,61,68,66,72,61,48,74,71,68],l:[["力石 聖也",6],["佐藤 啓成",4],["髙橋 海人",2]],L:[["佐藤 啓成",7,"元社員／コミュニケーションをよく取っている／動きが早く働きやすい"],["力石 聖也",3,"仕事内容も丁寧に教えてくれる"],["金子 紗也",1,"若さと元気で盛り上げられる"]]},
+"CONA立川":{s:[79,48,70,82,79,82,77,77,85,87,73,80,67],l:[["西浦 悠翔",5],["小川 紗季",4],["柿沼 星愛",3]],L:[["柿沼 星愛",12,"営業を俯瞰し今やるべきことを共有／営業を回すことで右に出る者がいない"],["服部 尚樹",4,"元店長／指示を多めにくれる"],["小川 紗季",2,"みんなをリードし支えてくれる"]]},
+"CONA横浜鶴屋町":{s:[80,42,76,86,77,76,81,85,82,79,76,84,78],l:[["岡本 真緒",6],["伊藤 櫂",4],["能城 桂都",3]],L:[["伊藤 櫂",8,"周りをよく見ている／指示出しが的確／ミスの時に優しく助けてくれる"],["磯村 美都",6,"スタッフとのコミュニケーションが一番／いると活気が出る"],["関 友美",3,"時間管理と指示出し／周りを見て行動できる"]]},
+"CONA船橋":{s:[76,58,58,84,74,78,71,80,78,72,74,80,68],l:[["岡村 優輝",4],["安西 友佳",4],["樗木 彩乃",3]],L:[["岡村 優輝",10,"店長経験を活かし的確な指示と働く姿勢／視野が広い／聞く前に次を教えてくれる"],["宮永 真歩",2,"新人に教えている／指示出し・状況把握に積極的"],["安西 友佳",2,"何を聞いても優しく教えてくれる"]]},
+"CONA溝の口":{s:[70,70,86,80,63,70,67,77,71,67,60,70,70],l:[["齊京 碧",8],["武藤 太一",2],["永井 俊也",1]],L:[["武藤 太一",6,"アルバイトで一番仕事ができ的確な指示／一番お店を知っている"],["高橋 丈",6,"お店とみんなのことを考えている／他ポジションにも声をかけ動かしてくれる"]]},
+"CONA錦糸町":{s:[79,46,80,87,70,83,80,82,81,80,76,84,70],l:[["伊藤 利将",7],["田中 菜々美",5],["林 七羽",2]],L:[["林 七羽",9,"いつも指示を出す／時間管理や席状況の共有／ホールをまとめる"],["清水 ひろか",3,"指示出しと明るい雰囲気／全ポジションをこなし全員とコミュニケーション"],["澤田 翔太",2,"仕事が早い／社員から頼りにされている"]]},
+"CONA柏":{s:[83,27,45,86,84,79,81,92,82,79,79,81,83],l:[["田中 杏莉奈",2],["櫻井 帆夏",2],["長尾 夏帆",2]],L:[["櫻井 帆夏",9,"コミュニケーション能力が高い／座席やキッチンの指示が的確／全ポジション対応"]]},
+"CONA麻布十番":{s:[76,56,100,85,68,79,72,78,73,72,75,81,78],l:[["松下 智秋",5],["宮野 日暖",3],["バルガスロハス ナオキ",2]],L:[["松下 智秋",12,"歴が長い／仕込みなどで指示を出してくれる／色々知っている"]]},
+"CONA津田沼":{s:[89,5,59,94,86,88,89,91,90,88,84,88,93],l:[["髙野 美佑",3],["澁谷 一咲",3],["栗林 健斗",2]],L:[["亀田 紗枝",6,"冷静に対応し全体をマネジメント／活気がある／指示出しで声が出ている"],["髙野 美佑",3,"一番歴が長いオープニングメンバー／店舗全体を見て指示出し"],["西 隼世",2,"教えてくれた／楽しいムードの中でメリハリを与える存在"]]},
+"CONA田町芝浦":{s:[75,61,78,83,71,76,75,73,76,74,76,80,65],l:[["吉原 理一",4],["河田 はるか",3],["植田 結衣",2]],L:[["志村 龍汰",8,"どんな状況でも冷静／自主性がある／色んなポジションができる"],["北村 月渚",3,"声出しの意識が高い／やるべきことを理解している"],["河田 はるか",2,"率先して行動し周りにも行動を促す"]]},
+"CONA町田":{s:[71,69,53,87,71,72,71,77,77,63,65,73,50],l:[["松村 一葉",4],["小瀬 姫羅良",3],["山本 彩乃",2]],L:[["栗原 愛琉",5,"先輩後輩に限らず効率的な指示／自発的に行動し周りが見えている"],["小瀬 姫羅良",5,"優しく教えてくれる／常に冷静に指示を出す"]]},
+"CONA京急蒲田":{s:[78,49,80,92,75,83,74,81,80,75,72,76,76],l:[["水上 陽那多",8],["遠藤 菜摘",3],["古市 一真",2]],L:[["関口 愛可",8,"的確な指示で周りを動かす／困った時にスムーズに助けてくれる／一番歴が長い"],["古市 一真",4,"常に周りを見て指示／年長者で元店長の経験"],["南雲 美貴",2,"出勤時間が多い／動きに無駄がなく指示してくれる"]]},
+"CONA西新宿一丁目":{s:[76,57,74,84,78,75,73,81,83,77,64,72,74],l:[["笠原 羽美",11],["柴田 明依",3],["照井 凛太",1]],L:[["田中 千智",9,"視野の広さと気配り／周りを見てアドバイスしてくれる"],["青木 英俊",4,"様々なところに視野を向ける／社員と同じ温度感で指示出し"],["笠原 羽美",2,"ホール業務を取り仕切る／声がけで店に活気を作る"]]}
+}},
+"2026-07":{total:82,stores:{
+"CONA上野":{s:[85,21,83,93,87,89,82,87,88,86,74,85,76],l:[["高原 美晴",11],["廣地 憲太郎",2],["曽我 美月",2]],L:[["高原 美晴",12,"周りをよく見て適時に行動できる／常に周りを見ている／歴が浅い自分にも指導してくれる"],["相場 航太",2,"どのポジションも責任を持って安定して動いている"],["曽我 美月",2,"細かいところまで見て的確な指示／混雑時も声出しで引っ張ってくれる"]]},
+"CONA川崎":{s:[79,55,66,85,74,79,80,83,81,75,74,80,74],l:[["鈴木 栞太",10],["三浦 知紗",3],["安宅 優佳",2]],L:[["金井 悠",13,"時間管理・指示が行き届いている／いつも的確な指示／信頼されている"],["安宅 優佳",3,"率先して指示を出し、ダメなところはしっかり伝えてくれる"],["数 空大",3,"アルバイトへの的確な指示で営業が安定する"]]},
+"CONA歌舞伎町":{s:[75,68,54,74,70,82,76,82,71,70,79,80,70],l:[["花岡 はるの",2],["山國 小夏",2],["笠松 諒太",1]],L:[["花岡 はるの",7,"調理場からホール・電話対応までこなし指示も的確／店の運営を考えアドバイスもくれる"]]},
+"CONA所沢":{s:[82,39,56,90,81,82,78,82,89,83,79,79,79],l:[["下川 紗英",5],["角津 寧々",2],["貞弘 希帆",1]],L:[["佐々木 悠月",7,"なんでもできる／メリハリがある／全体を見てサポート・指示・共有ができる"],["下川 紗英",2,"担当外も助っ人、時間管理や伝票把握も積極的／教え方が上手"],["小林 萌々花",1,"連携力と責任感がある"]]},
+"CONA渋谷宇田川町":{s:[80,50,53,81,78,78,80,85,83,82,83,79,75],l:[["大久保 結愛",4],["西尾 優斗",2],["柴田 妃夏",1]],L:[["菊森 秋季子",7,"忙しい時によく指示を出している／周りを見て指示出しをしている"],["平井 唯斗",1,"新人にも優しく教え、通いやすい環境を作ってくれる"]]},
+"CONA大宮":{s:[84,26,76,90,88,84,81,88,89,80,78,83,76],l:[["鎌田 心雪",8],["植松 咲羽",4],["武永 あかり",3]],L:[["鎌田 心雪",13,"指示出し・アルバイト指導が素晴らしい／貸切営業でも声を出し営業をスムーズに"],["田島 智竜",6,"メンタルケア／社員経験を活かして周りを見ている"]]},
+"CONA蒲田":{s:[77,61,48,81,77,78,72,80,81,77,75,75,70],l:[["佐藤 啓成",4],["力石 聖也",3],["髙橋 海人",2]],L:[["髙橋 海人",6,"丁寧に優しく教えてくれる／お客様の問題も解決できる／率先して動く"],["佐藤 啓成",3,"指示が的確で丁寧／視野が広い"],["三橋 隼人",1,"丁寧に優しく教えてくれる"]]},
+"CONA立川":{s:[81,47,76,86,78,83,83,78,86,84,75,85,69],l:[["柿沼 星愛",7],["此村 あゆみ",5],["西浦 悠翔",3]],L:[["柿沼 星愛",14,"誰よりも仕事ができ人柄が良い／まとめ役／状況を見て指示を出す"],["服部 尚樹",2,"状況把握から対処が早く説明がわかりやすい"],["常陸 匠",1,"周りを見ていてお手本になる"]]},
+"CONA横浜鶴屋町":{s:[81,44,86,89,75,80,81,87,83,78,77,84,78],l:[["赤塚 未来",5],["伊藤 櫂",3],["丹羽 悠太",2]],L:[["伊藤 櫂",8,"全ポジション対応＋的確な指示／周りをよく見ている"],["関 友美",4,"時間管理と指示／率先して行動し困っている人をサポート"],["磯村 美都",3,"困った時に助けてくれる／コミュニケーションが一番取れている"]]},
+"CONA船橋":{s:[86,14,77,93,87,90,83,87,88,85,80,85,80],l:[["宮永 真歩",8],["樗木 彩乃",6],["安西 友佳",4]],L:[["宮永 真歩",8,"新人への指示・教育／店全体を見て動く／面倒見が良く指示が的確"],["樗木 彩乃",5,"周りから頼られスタッフを助ける／効率的に現場を回す"],["安西 友佳",5,"色々と仕事を教えてくれる"]]},
+"CONA溝の口":{s:[61,82,76,69,58,61,64,63,63,54,55,64,62],l:[["齊京 碧",8],["吾妻 流伊",2],["永井 俊也",1]],L:[["武藤 太一",8,"仕事を把握し効率よく動く／嫌な顔せず助けてくれる"],["高橋 丈",3,"優しく教えてくれる／店内状況を把握し指示・鼓舞できる"],["齊京 碧",1,"優先順位が正確で、指示をすぐ実践し他スタッフにも教えている"]]},
+"CONA錦糸町":{s:[83,30,85,87,80,82,82,89,82,84,79,87,75],l:[["林 七羽",5],["伊藤 利将",3],["清水 ひろか",3]],L:[["林 七羽",8,"わかりやすく教えてくれる／的確な指示／迷っている時に声をかけてくれる"],["清水 ひろか",6,"オールラウンダーで責任感がある／雰囲気を上げてくれる"],["武市 健人",1,"先頭にいる"]]},
+"CONA柏":{s:[83,32,91,87,84,85,80,88,88,79,74,80,80],l:[["櫻井 帆夏",6],["田中 杏莉奈",5],["長尾 夏帆",3]],L:[["櫻井 帆夏",15,"テキパキと指示出し／席管理と提供スピードの両立／全体を見た的確な指示"],["中山 綸",1,"後輩に助言してくれる"],["田中 杏莉奈",1,"的確な指示を出してくれる"]]},
+"CONA麻布十番":{s:[84,25,87,89,84,89,81,90,82,80,80,85,77],l:[["宮野 日暖",4],["バルガスロハス ナオキ",4],["坊田 希理",3]],L:[["松下 智秋",8,"テキパキ働く／指示が的確／忙しい時も冷静に率先して行動"],["宮野 日暖",3,"指示出しが上手／共有が多くみんなをひとつにしている"],["齊藤 俊太",2,"キッチンを覚え、自ら動いている"]]},
+"CONA津田沼":{s:[89,5,95,95,84,92,86,91,91,91,79,88,90],l:[["神山 橙哉",4],["亀田 紗枝",4],["野澤 紗季",3]],L:[["髙野 美佑",8,"幹事をしている／経験を活かし優しく教える／分け隔てなくコミュニケーション"],["亀田 紗枝",4,"新人に教え、声が出ている"],["上野 ひかり",3,"困った時に優しく教え、指示が的確でわかりやすい"]]},
+"CONA田町芝浦":{s:[77,59,89,79,74,79,76,80,79,74,78,82,69],l:[["吉澤 亜藍",5],["志村 龍汰",4],["磯田 明香理",2]],L:[["志村 龍汰",9,"色んな人とコミュニケーションを取り支えてくれる／応援の言葉をかける"],["河田 はるか",3,"困っている人をサポートしチームをまとめる／自発的で指示が的確"],["吉澤 亜藍",3,"落ち着きがあり業務を教えてくれる／話しやすい"]]},
+"CONA町田":{s:[75,73,91,86,70,79,68,76,79,74,75,75,64],l:[["松村 一葉",11],["小瀬 姫羅良",5],["山本 彩乃",2]],L:[["栗原 愛琉",9,"忙しい時も冷静／言いにくいことも嫌味なく言える／同期にも遠慮なく指示・提案"],["松村 一葉",5,"指示やアドバイスをくれる／笑顔で引っ張る"],["小瀬 姫羅良",4,"何でも答えてくれる／常に冷静に指示"]]},
+"CONA京急蒲田":{s:[79,54,63,90,83,83,79,78,80,75,74,77,68],l:[["水上 陽那多",6],["古市 一真",2],["田中 寧音",1]],L:[["関口 愛可",6,"忙しい時も冷静で優しく指示／状況を瞬時に判断／お客様第一"],["小川 菜奈",2,"色んなポジションでテキパキ指示出し"],["遠藤 菜摘",2,"自ら積極的に働きホールの中心になりつつある"]]},
+"CONA西新宿一丁目":{s:[77,62,74,80,77,74,76,73,79,78,72,76,80],l:[["笠原 羽美",4],["野津 華愛",3],["常盤 和織",3]],L:[["笠原 羽美",8,"周りが見えていて皆と仲が良い／業務に一生懸命／率先してコミュニケーション"],["村上 愛莉",3,"責任感があり真面目／ホール・サイド・ドリバをこなす"],["常盤 和織",3,"指示出しが的確／時間管理やドリンク・ホール業務を完璧にこなす"]]},
+"CONA新宿東南口":{s:[76,63,78,85,75,80,71,79,78,75,70,73,77],l:[["松浦 ひなた",14],["永江 悠貴",3],["杉崎 ひなた",2]],L:[["松浦 ひなた",15,"お店全体が見えている／的確な指示でスムーズに進む"],["永江 悠貴",6,"顔が広く分け隔てなくコミュニケーション／年齢問わず指示できる"],["杉崎 ひなた",2,"後輩指導をしている／周りが見えている"]]},
+"ナポリマンあざみ野":{s:[83,27,97,90,78,84,79,85,85,87,78,84,84],l:[["大塚 一成",10],["関戸 彩華",7],["羽太 茉白",3]],L:[["武藤 航",17,"進んで教えてくれる／状況に応じた適切な指示、ホールもキッチンもできる／指示がわかりやすい"],["関戸 彩華",5,"年齢関係なく優しく分かりやすく教えてくれる／教えながらやらせる行動ができている"],["羽太 茉白",3,"キッチンにいながらホールを見て臨機応変に対応／貫禄がある"]]},
+"CONA横浜西口":{s:[84,24,66,91,84,86,83,86,91,87,73,81,80],l:[["徳永 恋実",7],["甲木 あいり",2],["三枝木 稟華",2]],L:[["竹林 洸輝",5,"仕事を覚えるのが早く頼りになる／周りに気を配り的確な指示でチームをまとめる"],["大塚 百桃",4,"出勤日数が多くどのポジションもでき声かけができる／アルバイトで一番CONAに詳しい"],["徳永 恋実",4,"色んな人に声をかけ積極的に動ける／忙しくても指示を出し手伝ってくれる"]]},
+"CONA恵比寿":{s:[83,28,86,90,86,88,76,88,84,86,74,81,78],l:[["亀井 由衣",3],["青山 仁心",3]],L:[["亀井 由衣",5,"的確な指示や後輩指導ができる／最も歴が長い／シフト貢献と周りに教える動き"],["青山 仁心",1,"学生なのに頑張っている"]]},
+"CONAたまプラーザ":{s:[82,42,85,88,76,85,79,83,83,81,77,80,87],l:[["小川 柚比",7],["安藤 花音",5],["中江 優月",5]],L:[["安藤 花音",5,"新人にも仕事を任せ指示を出してくれる／状況判断が的確で周囲をまとめる"],["細野 旭",5,"周りを見て動けている／一番年上"],["中江 優月",4,"新人に優しく教え仕事が完璧／色んな人に声をかけてくれる"]]}
+}}
+};
+
+const months=Object.keys(DATA).sort();
+const $=id=>document.getElementById(id);
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+const f1=v=>v==null?"-":(Math.round(v*10)/10).toFixed(1);
+function stats(m){const st=DATA[m].stores,names=Object.keys(st);const cols=[...Array(13).keys()].filter(i=>i!==1);const av={};cols.forEach(i=>av[i]=avg(names.map(n=>st[n].s[i])));
+ const rk=[...names].sort((a,b)=>st[b].s[0]-st[a].s[0]);const inR={};rk.forEach(n=>inR[n]=1+rk.filter(x=>st[x].s[0]>st[n].s[0]).length);const rankBy=k=>{const o={};names.forEach(n=>o[n]=1+names.filter(x=>st[x].s[k]>st[n].s[k]).length);return o};return{st,names,av,inR,rk,rankBy}}
+function cls(v,a){if(a==null)return"";const d=v-a;return d<=-5?"vlo":d<0?"lo":d>=5?"hi":""}
+function diff(v,p){if(p==null)return'<span style="color:#aaa">-</span>';const d=v-p;return d>0?`<span class="up">▲${f1(d).replace(".0","")}</span>`:d<0?`<span class="dn">▼${f1(-d).replace(".0","")}</span>`:"±0"}
+function areaOf(n){for(const a in AREAS)if(AREAS[a].includes(n))return a;return"未分類"}
+const legend=`<div class="legend"><span class="lo">平均未満</span><span class="vlo">平均-5pt以下</span><span class="hi">平均+5pt以上</span> ※ブランド平均・ブランド順位は送付分のCONA・ナポリマン店舗のみで算出</div>`;
+let sortKey=0;const sortLabel=()=>sortKey==0?"総合":sortKey==2?"回答率":ITEMS[sortKey-3];
+let TH=5;
+function renderTend(S,P){const el=$("tend");if(!P){el.innerHTML='<div class="box">比較月を選択してください。</div>';return}
+ const lab=["総合",null,null,...ITEMS],ups=[],dns=[];
+ S.names.forEach(n=>{if(!P.st[n])return;const s=S.st[n].s,p=P.st[n].s;[0,...ITEMS.map((_,i)=>i+3)].forEach(i=>{const d=s[i]-p[i];if(Math.abs(d)>=TH)(d>0?ups:dns).push({n,a:areaOf(n),it:lab[i],p:p[i],v:s[i],d})})});
+ ups.sort((a,b)=>b.d-a.d);dns.sort((a,b)=>a.d-b.d);
+ const bi=[0,...ITEMS.map((_,i)=>i+3)].map(i=>({it:lab[i],p:P.av[i],v:S.av[i],d:S.av[i]-P.av[i]}));
+ const cnt=(L,k)=>{const o={};L.forEach(x=>o[x[k]]=(o[x[k]]||0)+1);return Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>`${x[0]}（${x[1]}）`).join("、")||"-"};
+ const tbl=(L,c)=>L.length?`<table><tr><th>店舗</th><th>エリア</th><th>項目</th><th>${cmpM()}</th><th>${cur()}</th><th>増減</th></tr>${L.map(x=>`<tr><td class="n">${x.n}</td><td>${x.a.replace("エリア","")}</td><td>${x.it}</td><td>${x.p}</td><td>${x.v}</td><td class="${c}"><b>${x.d>0?"▲":"▼"}${Math.abs(x.d)}</b></td></tr>`).join("")}</table>`:'<div class="note">該当なし</div>';
+ el.innerHTML=`<div class="box"><h3>傾向（${cmpM()} → ${cur()}）</h3><label>ピックアップ基準：±<select id="th">${[3,5,8,10].map(v=>`<option ${v==TH?"selected":""}>${v}</option>`).join("")}</select>pt以上</label>
+ <table style="margin-top:8px"><tr><th>ブランド平均</th>${bi.map(x=>`<th>${x.it}</th>`).join("")}</tr><tr><td>${cmpM()}</td>${bi.map(x=>`<td>${f1(x.p)}</td>`).join("")}</tr><tr><td>${cur()}</td>${bi.map(x=>`<td>${f1(x.v)}</td>`).join("")}</tr><tr><td>増減</td>${bi.map(x=>`<td class="${x.d>0?"up":x.d<0?"dn":""}"><b>${x.d>0?"▲":x.d<0?"▼":"±"}${f1(Math.abs(x.d))}</b></td>`).join("")}</tr></table></div>
+ <div class="grid"><div class="box"><h3 style="border-color:#0a7a3d">上昇ピックアップ（${ups.length}件）</h3><div class="note">店舗別件数：${cnt(ups,"n")}<br>項目別件数：${cnt(ups,"it")}</div>${tbl(ups,"up")}</div>
+ <div class="box"><h3 style="border-color:#c62828">減少ピックアップ（${dns.length}件）</h3><div class="note">店舗別件数：${cnt(dns,"n")}<br>項目別件数：${cnt(dns,"it")}</div>${tbl(dns,"dn")}</div></div>
+ <div class="note">回答率は対象外。比較月にデータがない店舗は除外。</div>`;
+ $("th").onchange=e=>{TH=+e.target.value;renderTend(S,P)}}
+function head(){return`<tr><th>ブランド順位<br><small>${sortLabel()}</small></th><th>店舗</th><th>エリア</th><th class="th-sort" onclick="sortKey=0;render()">総合</th><th>前回比</th><th>全社順位</th><th class="th-sort" onclick="sortKey=2;render()">回答率</th>${ITEMS.map((t,i)=>`<th class="th-sort" onclick="sortKey=${i+3};render()">${t}</th>`).join("")}</tr>`}
+function row(n,S,P){const RK=S.rankBy(sortKey);const s=S.st[n].s,p=P&&P.st[n]?P.st[n].s:null;return`<tr><td><b>${RK[n]}</b></td><td class="n"><a href="#" onclick="openStore('${n}');return false">${n}</a></td><td>${areaOf(n).replace("エリア","")}</td><td class="${cls(s[0],S.av[0])}"><b>${s[0]}</b></td><td>${diff(s[0],p&&p[0])}</td><td>${s[1]}/${DATA[cur()].total||"-"}</td><td class="${cls(s[2],S.av[2])}">${s[2]}%</td>${ITEMS.map((_,i)=>`<td class="${cls(s[i+3],S.av[i+3])}">${s[i+3]}<br><small>${diff(s[i+3],p&&p[i+3])}</small></td>`).join("")}</tr>`}
+function avgRow(lbl,S,names){const a=i=>avg(names.map(n=>S.st[n].s[i]));return`<tr class="avg"><td colspan="3">${lbl}</td><td>${f1(a(0))}</td><td></td><td></td><td>${f1(a(2))}%</td>${ITEMS.map((_,i)=>`<td>${f1(a(i+3))}</td>`).join("")}</tr>`}
+const cur=()=>$("month").value,cmpM=()=>$("cmp").value;
+function renderSum(S,P){const n=S.names.length;const best=S.rk[0],worst=S.rk[n-1];
+ const itemAv=ITEMS.map((t,i)=>[t,S.av[i+3]]).sort((a,b)=>a[1]-b[1]);
+ const sorted=[...S.names].sort((a,b)=>S.st[b].s[sortKey]-S.st[a].s[sortKey]);
+ let h=`<div class="cards"><div class="card"><small>対象店舗数</small><b>${n}店舗</b></div><div class="card"><small>ブランド平均（総合）</small><b>${f1(S.av[0])}点</b>${P?`<small>前回 ${f1(P.av[0])} ${diff(S.av[0],P.av[0])}</small>`:""}</div><div class="card"><small>平均回答率</small><b>${f1(S.av[2])}%</b></div><div class="card"><small>最高</small><b>${S.st[best].s[0]}点</b><small>${best}</small></div><div class="card"><small>最低</small><b>${S.st[worst].s[0]}点</b><small>${worst}</small></div><div class="card"><small>平均が最も低い項目</small><b>${itemAv[0][0]}</b><small>${f1(itemAv[0][1])}点 / 次点 ${itemAv[1][0]} ${f1(itemAv[1][1])}点</small></div></div>`;
+ h+=`<div class="box"><h3>店舗別スコア一覧（${cur()}${P?` ／ 比較：${cmpM()}`:""}）</h3>${legend}<div style="overflow-x:auto"><table>${head()}${avgRow("ブランド平均",S,S.names)}${sorted.map(x=>row(x,S,P)).join("")}</table></div><div class="note">見出し（総合・回答率・各項目）クリックで並び替え。全社順位は全体店舗数（4月80・7月82）中の参考値。</div></div>`;
+ $("sum").innerHTML=h}
+function renderArea(S,P){let h=`<div class="box"><h3>エリア別スコア（${cur()}）</h3>${legend}<div style="overflow-x:auto"><table>${head()}${avgRow("ブランド平均",S,S.names)}`;
+ const groups={};S.names.forEach(n=>(groups[areaOf(n)]=groups[areaOf(n)]||[]).push(n));
+ Object.keys(AREAS).concat(["未分類"]).forEach(a=>{const g=groups[a];if(!g)return;g.sort((x,y)=>S.st[y].s[sortKey]-S.st[x].s[sortKey]);
+  const ga=i=>avg(g.map(n=>S.st[n].s[i]));h+=`<tr class="area"><td colspan="3">${a}（${g.length}店舗）平均</td><td class="${cls(ga(0),S.av[0])}">${f1(ga(0))}</td><td></td><td></td><td>${f1(ga(2))}%</td>${ITEMS.map((_,i)=>`<td class="${cls(ga(i+3),S.av[i+3])}">${f1(ga(i+3))}</td>`).join("")}</tr>`+g.map(x=>row(x,S,P)).join("")});
+ const miss=Object.values(AREAS).flat().filter(n=>!S.st[n]);
+ h+=`</table></div><div class="note">見出し（総合・回答率・各項目）クリックでエリア内の並び順とブランド順位が切り替わります。</div>${miss.length?`<div class="note">データ未登録：${miss.join("、")}</div>`:""}</div>`;$("area").innerHTML=h}
+function radar(series){const W=340,c=170,R=120,N=ITEMS.length,pt=(i,v)=>{const a=-Math.PI/2+2*Math.PI*i/N,r=R*Math.max(0,v-40)/60;return[c+r*Math.cos(a),c+r*Math.sin(a)]};
+ let g="";[50,60,70,80,90,100].forEach(v=>g+=`<polygon points="${ITEMS.map((_,i)=>pt(i,v).join(",")).join(" ")}" fill="none" stroke="#ddd"/>`);
+ ITEMS.forEach((t,i)=>{const[x,y]=pt(i,108);g+=`<text x="${x}" y="${y}" font-size="10" text-anchor="middle" dominant-baseline="middle">${t}</text>`});
+ series.forEach(s=>g+=`<polygon points="${s.v.map((v,i)=>pt(i,v).join(",")).join(" ")}" fill="${s.f}" stroke="${s.c}" stroke-width="2" ${s.d?'stroke-dasharray="5 3"':""}/>`);
+ return`<svg viewBox="0 0 ${W} ${W}" width="100%" style="max-width:380px">${g}</svg><div class="legend">${series.map(s=>`<span style="border:2px ${s.d?"dashed":"solid"} ${s.c}">${s.n}</span>`).join("")}</div><div class="note">目盛：40〜100点</div>`}
+let selStore=null;function openStore(n){selStore=n;document.querySelector('nav button[data-t="store"]').click()}
+function renderStore(S,P){if(!selStore||!S.st[selStore])selStore=S.rk[0];const d=S.st[selStore],s=d.s,p=P&&P.st[selStore]?P.st[selStore].s:null;
+ let h=`<div class="box"><label>店舗：<select id="ss">${Object.keys(AREAS).map(a=>`<optgroup label="${a}">${AREAS[a].filter(n=>S.st[n]).map(n=>`<option ${n==selStore?"selected":""}>${n}</option>`).join("")}</optgroup>`).join("")}</select></label></div>`;
+ h+=`<div class="cards"><div class="card"><small>総合</small><b>${s[0]}点</b><small>ブランド平均 ${f1(S.av[0])} / 前回比 ${diff(s[0],p&&p[0])}</small></div><div class="card"><small>ブランド順位</small><b>${S.inR[selStore]}位</b><small>/${S.names.length}店舗（全社 ${s[1]}位）</small></div><div class="card"><small>回答率</small><b>${s[2]}%</b><small>ブランド平均 ${f1(S.av[2])}%</small></div></div>`;
+ h+=`<div class="box"><h3>項目別スコア</h3>${legend}<table class="dt"><tr><th style="width:110px">項目</th><th style="width:60px">自店舗</th><th>スコア（｜＝ブランド平均）</th><th style="width:80px">ブランド平均</th><th style="width:60px">平均差</th><th style="width:70px">ブランド順位</th>${p?`<th style="width:60px">前回</th><th style="width:60px">前回比</th>`:""}</tr>${ITEMS.map((t,i)=>{const k=i+3,v=s[k],a=S.av[k],rk=S.rankBy(k)[selStore],c=v-a<=-5?"#f08a4b":v<a?"#f2c94c":v-a>=5?"#2e9e5b":"#5b8def";return`<tr><td class="n"><b>${t}</b></td><td class="${cls(v,a)}" style="font-size:15px"><b>${v}</b></td><td><div class="bar"><div style="width:${v}%;background:${c}"></div><i style="left:${a}%"></i></div></td><td>${f1(a)}</td><td>${diff(v,a)}</td><td>${rk}位</td>${p?`<td>${p[k]}</td><td>${diff(v,p[k])}</td>`:""}</tr>`}).join("")}</table></div>`;
+ h+=`<div class="box"><h3>愛されMVP</h3><div class="mvp">${d.l.map((m,i)=>`<div><b>${i+1}位 ${m[0]}</b>（${m[1]}票）</div>`).join("")}</div></div>
+ <div class="box"><h3>リーダーシップMVP</h3><div class="mvp">${d.L.map((m,i)=>`<div><b>${i+1}位 ${m[0]}</b>（${m[1]}票）<ul>${m[2].split("／").map(c=>`<li>${c}</li>`).join("")}</ul></div>`).join("")}</div></div>`;
+ $("store").innerHTML=h;$("ss").onchange=e=>{selStore=e.target.value;render()}}
+let trendItem=0;
+function renderTrend(){const opts=[["総合",0],["回答率",2]].concat(ITEMS.map((t,i)=>[t,i+3]));
+ const all=[...new Set(months.flatMap(m=>Object.keys(DATA[m].stores)))];const SS=months.map(stats);
+ let h=`<div class="box"><h3>月別推移</h3><label>指標：<select id="ti">${opts.map(o=>`<option value="${o[1]}" ${o[1]==trendItem?"selected":""}>${o[0]}</option>`).join("")}</select></label>
+ <div style="overflow-x:auto;margin-top:8px"><table><tr><th>エリア</th><th>店舗</th>${months.map(m=>`<th>${m}</th>`).join("")}<th>初回→最新</th></tr>
+ <tr class="avg"><td colspan="2">ブランド平均</td>${SS.map(S=>`<td>${f1(S.av[trendItem])}</td>`).join("")}<td>${months.length>1?diff(SS.at(-1).av[trendItem],SS[0].av[trendItem]):"-"}</td></tr>`;
+ Object.keys(AREAS).forEach(a=>AREAS[a].filter(n=>all.includes(n)).forEach(n=>{const vals=months.map(m=>DATA[m].stores[n]?DATA[m].stores[n].s[trendItem]:null);const k=vals.filter(v=>v!=null);
+  h+=`<tr><td>${a.replace("エリア","")}</td><td class="n">${n}</td>${vals.map((v,j)=>`<td class="${v==null?"":cls(v,SS[j].av[trendItem])}">${v==null?"-":v}${j>0&&v!=null?"<br><small>"+diff(v,vals[j-1])+"</small>":""}</td>`).join("")}<td>${k.length>1?diff(k.at(-1),k[0]):"-"}</td></tr>`}));
+ h+=`</table></div>${months.length<2?'<div class="note">現在は1か月分のみ登録。過去データを追加すると月別の推移・増減が表示されます。</div>':""}</div>`;
+ $("trend").innerHTML=h;$("ti").onchange=e=>{trendItem=+e.target.value;renderTrend()}}
+function render(){const S=stats(cur()),P=cmpM()?stats(cmpM()):null;renderSum(S,P);renderArea(S,P);renderStore(S,P);renderTrend();renderTend(S,P)}
+months.forEach(m=>$("month").add(new Option(m,m)));$("month").value=months.at(-1);
+function fillCmp(){const c=$("cmp");c.innerHTML="";c.add(new Option("なし",""));months.filter(m=>m<cur()).reverse().forEach(m=>c.add(new Option(m,m)));if(c.options.length>1)c.selectedIndex=1}
+fillCmp();$("month").onchange=()=>{fillCmp();render()};$("cmp").onchange=render;
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button,.sec").forEach(e=>e.classList.remove("on"));b.classList.add("on");$(b.dataset.t).classList.add("on")});
+render();
+</script></body></html>
