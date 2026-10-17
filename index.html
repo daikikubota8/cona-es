@@ -19,7 +19,7 @@ td.n{text-align:left}tr.avg td{background:#1f3a5f;color:#fff;font-weight:bold}tr
 .legend span{display:inline-block;padding:2px 8px;margin-right:6px;border-radius:4px;font-size:11px}
 .bar{position:relative;height:14px;background:#eef1f5;border-radius:7px}.bar div{height:100%;border-radius:7px}.bar i{position:absolute;top:-3px;bottom:-3px;width:2px;background:#1f3a5f}.dt td{padding:7px 6px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}.chips button{border:1px solid #c5d0de;background:#fff;border-radius:16px;padding:6px 12px;cursor:pointer}.chips button.on{background:#1f3a5f;color:#fff;border-color:#1f3a5f;font-weight:bold}.rk1{background:#fff7d6!important}.medal{display:inline-block;width:24px;height:24px;line-height:24px;border-radius:50%;background:#e3e8ef;font-weight:bold}.m1{background:#f5c542}.m2{background:#c9ced6}.m3{background:#d9a066}.mem{font-size:11px;color:#555;text-align:left;white-space:normal;min-width:200px}
-@media (max-width:700px){.chips{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}.chips button{flex:0 0 auto}.mem{min-width:160px}}
+@media (max-width:700px){.ctl label{flex:1 1 45%!important}.ctl button{flex:1 1 45%}.chips{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}.chips button{flex:0 0 auto}.mem{min-width:160px}}
 .qi{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-left:3px;border-radius:50%;background:#1f3a5f;color:#fff;font-size:10px;font-weight:bold;cursor:pointer;vertical-align:middle;text-decoration:none}.chips button.on .qi{background:#fff;color:#1f3a5f}
 #qm{display:none;position:fixed;inset:0;background:#0006;z-index:100;align-items:center;justify-content:center;padding:16px}#qm.on{display:flex}.qbox{background:#fff;border-radius:10px;overflow:hidden;width:100%;max-width:440px;box-shadow:0 8px 30px #0004}.qh{padding:12px 14px;font-weight:bold;font-size:15px;position:relative}.qh small{font-weight:normal;font-size:11px}.qx{position:absolute;right:12px;top:6px;font-size:22px;cursor:pointer}.qr{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid #eee;font-size:13px;line-height:1.6;white-space:normal;text-align:left}.qr:nth-child(even){background:#f7f9fc}.qn{flex:0 0 22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-weight:bold;font-size:12px}
 .note{font-size:11px;color:#666;margin-top:6px}
@@ -46,7 +46,6 @@ a{color:#1e63d6;text-decoration:none;font-weight:bold}
 }
 
 
-/* ===== PDF/印刷 ===== */
 .ph{display:none}.ponly{display:none}body.pm .ponly{display:block}body.pm tr.px{display:none}
 body.pm .sec{display:none!important}body.pm .sec.pr{display:block!important;margin:0 auto;padding:0;background:#fff}
 body.pm .sec.pr .ph{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #1f3a5f;padding:0 0 4px;margin-bottom:6px}
@@ -57,9 +56,10 @@ body.pm .box,body.pm .card{box-shadow:none;border:1px solid #d5dbe4;margin-botto
 body.pm .cards{display:flex;flex-wrap:nowrap;gap:6px;margin-bottom:6px}body.pm .card{flex:1;min-width:0;padding:4px 8px}body.pm .card b{font-size:17px}
 body.pm th,body.pm td{padding:2px 4px;font-size:11px}body.pm .dt td{padding:4px}
 body.pm .grid{grid-template-columns:1fr 1fr;gap:6px}body.pm .mvp{flex-direction:row}
-body.pm .qi,body.pm .noprint,body.pm .th-sort{text-decoration:none}body.pm .qi,body.pm .noprint{display:none!important}
+body.pm .th-sort{text-decoration:none}body.pm .qi,body.pm .noprint{display:none!important}
 body.pm .note{margin-top:3px;font-size:10px}body.pm h3{font-size:13px;margin-bottom:4px}
-body.pm #tend .tw td,body.pm #tend .tw th{padding:1px 3px;font-size:10px;line-height:1.25}body.pm #tend .grid .tw tr>*:nth-child(2){display:none}body.pm .tw table{width:100%}body.pm .chips{margin:2px 0 6px}body.pm .chips button:not(.on){display:none}
+body.pm #tend .tw td,body.pm #tend .tw th{padding:1px 3px;font-size:10px;line-height:1.25}body.pm #tend .grid .tw tr>*:nth-child(2){display:none}body.pm .tw table{width:100%}
+body.pm .chips{margin:2px 0 6px}body.pm .chips button:not(.on){display:none}
 body.pm .sec[data-o="L"]{page:land}body.pm .sec[data-o="P"]{page:port}
 @page land{size:A4 landscape;margin:7mm}@page port{size:A4 portrait;margin:7mm}@page{size:A4 landscape;margin:7mm}
 @media print{body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.top,#qm{display:none!important}main{padding:0!important}body.pm .sec.pr{break-after:page}body.pm .sec.pr:last-of-type{break-after:auto}}
@@ -126,7 +126,33 @@ const DATA={
 "CONA横浜西口":{s:[84,24,66,91,84,86,83,86,91,87,73,81,80],l:[["徳永 恋実",7],["甲木 あいり",2],["三枝木 稟華",2]],L:[["竹林 洸輝",5,"仕事を覚えるのが早く頼りになる／周りに気を配り的確な指示でチームをまとめる"],["大塚 百桃",4,"出勤日数が多くどのポジションもでき声かけができる／アルバイトで一番CONAに詳しい"],["徳永 恋実",4,"色んな人に声をかけ積極的に動ける／忙しくても指示を出し手伝ってくれる"]]},
 "CONA恵比寿":{s:[83,28,86,90,86,88,76,88,84,86,74,81,78],l:[["亀井 由衣",3],["青山 仁心",3]],L:[["亀井 由衣",5,"的確な指示や後輩指導ができる／最も歴が長い／シフト貢献と周りに教える動き"],["青山 仁心",1,"学生なのに頑張っている"]]},
 "CONAたまプラーザ":{s:[82,42,85,88,76,85,79,83,83,81,77,80,87],l:[["小川 柚比",7],["安藤 花音",5],["中江 優月",5]],L:[["安藤 花音",5,"新人にも仕事を任せ指示を出してくれる／状況判断が的確で周囲をまとめる"],["細野 旭",5,"周りを見て動けている／一番年上"],["中江 優月",4,"新人に優しく教え仕事が完璧／色んな人に声をかけてくれる"]]}
-}}
+}},
+"2026-10":{stores:{
+"CONA横浜西口":{s:[81,52,68,85,76,83,82,81,82,77,75,83,81],l:[["徳永 恋実",5],["三枝木 稟華",5],["瀧尾 理々愛",5]],L:[["徳永 恋実",8,"誰にでも的確に指示を出せる／どのポジションも安心して任せられ視野が広い／時間管理が上手く接客が丁寧"],["三枝木 稟華",5,"周りをよく見て指示を出せている／積極的に声出しやコミュニケーションをとっている"],["松田 龍之介",1,"会ってない人もいるため"]]},
+"ナポリマンあざみ野":{s:[83,37,100,89,79,84,81,86,85,86,77,82,79],l:[["大塚 一成",9],["関戸 彩華",7],["武藤 航",3]],L:[["武藤 航",18,"教え方が丁寧／長くやっていて頼りがいがある／色々教えてくれる"],["関戸 彩華",4,"周りをよく見て行動しみんなをまとめる／周囲と協力して行動できる"],["大塚 一成",2,"周りのスタッフに声をかけている／指示をよく出しみんなの動きを見ている"]]},
+"CONA新宿東南口":{s:[70,78,100,80,70,71,65,68,68,70,66,69,68],l:[["松浦 ひなた",14],["諸井 將力",3],["清水 拓都",3]],L:[["松浦 ひなた",16,"いつも指示を出してくれる／新人に教えている／臨機応変に対応できる"],["原田 悠亜",3,"ホールキッチン関係なく指示を出せる／アルバイトとコミュニケーションをとり的確な指示"],["杉崎 ひなた",3,"責任感と実力がある／バイトリーダー"]]},
+"CONA恵比寿":{s:[84,24,100,91,83,79,87,87,83,81,82,90,80],l:[["坂上 千瑛",3],["亀井 由衣",2],["青山 仁心",1]],L:[["亀井 由衣",5,"周りが最も見えている／出勤率が高く教え方も丁寧／一番年上"],["青山 仁心",1,"責任感がある"]]},
+"CONAたまプラーザ":{s:[85,18,100,91,82,89,83,85,88,83,80,87,85],l:[["中江 優月",6],["小川 柚比",4],["石岡 白琥",4]],L:[["中江 優月",13,"ピンチな時に優しく助けてくれる／指示をくれる／周りを見れる"],["安藤 花音",7,"いつも笑顔で対応／幹事をしてくれ指示出しも的確"],["黒田 大樹",2,"ピザ場で活躍／どこでもできる"]]},
+"CONA西新宿一丁目":{s:[80,54,100,87,79,84,80,76,78,76,77,79,79],l:[["笠原 羽美",7],["常盤 和織",4],["村上 愛莉",4]],L:[["笠原 羽美",9,"ルールをちゃんと守り周りが見えている／ミーティングで一番意見を出している"],["村上 愛莉",8,"真面目でたくさん出勤して頑張っている／色んなポジションができる"],["常盤 和織",2,"接客が良く一番きびきび行動／高校生ながらホールを回し信頼を得ている"]]},
+"CONA上野":{s:[83,33,91,90,83,86,83,84,86,83,76,83,76],l:[["高原 美晴",12],["廣地 憲太郎",2],["相場 航太",2]],L:[["高原 美晴",8,"時間管理など色々してくれる／どのポジションもこなし状況に応じた指示／作業が早く指示出しも完璧"],["相場 航太",4,"指示出しがとても上手い／一番仕事ができる"],["曽我 美月",3,"周りを見ている／丁寧に教えてくれた"]]},
+"CONA川崎":{s:[78,58,86,86,75,78,78,81,77,72,81,80,76],l:[["鈴木 栞太",6],["安宅 優佳",3],["金井 悠",3]],L:[["金井 悠",15,"どのポジションでも周りが見えて営業を引っ張る／声がけしてくれる／自ら進んで仕事に取り組む"],["安宅 優佳",2,"取り組む姿勢と雰囲気を明るくする／時間管理で指示出しし店を円滑に回す"],["数 空大",2,"営業の流れを読み指示出ししながら立ち回る安心感／的確な指示・声出し・雰囲気作り"]]},
+"CONA歌舞伎町":{s:[74,75,100,72,69,73,77,83,69,66,80,80,75],l:[["花岡 はるの",5],["有田 壮志",3],["笠松 諒太",3]],L:[["花岡 はるの",12,"営業中の動き方の指示をくれる／視野が広くサポートや指示出しをしてくれる"],["菊森 秋季子",1,"指示が的確"],["花岡 翔太",1,"全体を把握し的確な判断／教え方が丁寧で物腰が柔らか"]]},
+"CONA所沢":{s:[88,11,42,93,88,87,83,92,90,86,87,86,85],l:[["佐々木 悠月",2],["貞弘 希帆",2],["下川 紗英",1]],L:[["佐々木 悠月",3,"周りをよく見ている／歴が長く業務をしっかりこなす／冷静かつ臨機応変"],["小林 萌々花",1,"歴が長く仕事にしっかり取り組んでいる"],["下川 紗英",1,"出勤時の営業のやりやすさが違う"]]},
+"CONA渋谷宇田川町":{s:[83,32,69,82,82,83,84,89,84,85,82,81,79],l:[["大久保 結愛",5],["柴田 妃夏",2],["西尾 優斗",1]],L:[["平井 唯斗",6,"頼りになる／新人への指示出しを積極的に行う／声が通る"],["柴田 妃夏",3,"色んなポジションができ笑顔で皆をフォロー／後輩の仕事にもアドバイス"]]},
+"CONA大宮":{s:[81,50,100,83,81,81,83,86,80,74,76,86,77],l:[["鎌田 心雪",9],["植松 咲羽",6],["琴 祭",5]],L:[["鎌田 心雪",19,"忙しい時でも楽しそうに明るく働く／歴が長くできることが多い"],["田島 智竜",5,"いい人／周りの状況を見て助け合う"],["武永 あかり",2,"知識が増え分からないことを教えている／周りが見えている"]]},
+"CONA蒲田":{s:[78,63,82,81,77,78,79,80,74,72,75,83,79],l:[["佐藤 啓成",4],["力石 聖也",3],["早﨑 蒼空",2]],L:[["佐藤 啓成",7,"声が大きくテキパキ／迷っているとすぐ教えてくれる／指示を出してくれる"],["髙橋 海人",6,"バイトリーダーで新人にしっかり教えられる／周りをよく見ている"],["平野 耕介",1,"指示が的確"]]},
+"CONA立川":{s:[82,42,100,89,80,83,81,76,85,87,81,87,72],l:[["西浦 悠翔",7],["柿沼 星愛",6],["小川 紗季",4]],L:[["柿沼 星愛",17,"みんなをまとめやる気にさせる／的確な指示／状況把握が早く共有も的確"],["西浦 悠翔",4,"周りを引っ張ってくれる／エースの立場になって変わった"],["小川 紗季",2,"積極的な指示出しと適切な判断／元社員"]]},
+"CONA横浜鶴屋町":{s:[82,45,87,89,78,82,80,86,85,80,75,85,77],l:[["赤塚 未来",5],["伊藤 櫂",3],["能城 桂都",3]],L:[["伊藤 櫂",14,"頼りがいがあり周りを見て行動／スピーディーかつ丁寧、優しく教えてくれる／どのポジションもできる"],["赤塚 未来",2,"頼りになる／指示出しが的確、ホールにいると安心"],["磯村 美都",1,"スタッフとのコミュニケーションを積極的にしている"]]},
+"CONA船橋":{s:[84,30,91,86,82,86,85,87,83,76,84,86,80],l:[["宮永 真歩",6],["荒川 喜輝",4],["浅山 莉央",4]],L:[["宮永 真歩",15,"社員の店作りに協力し発信力がある／バイトリーダーとして責任を持つ／新人と積極的にコミュニケーション"],["安西 友佳",3,"いつも周りを見て指示してくれる"],["樗木 彩乃",2,"長く働き安心感、話しやすい／的確な指示、視野が広い"]]},
+"CONA溝の口":{s:[73,76,80,79,75,73,73,80,78,65,64,70,69],l:[["齊京 碧",10],["吾妻 流伊",1],["武藤 太一",1]],L:[["齊京 碧",9,"初めから丁寧に教えてくれる／社員と同じ目線で働き伝える力がある／笑顔で温厚、皆から慕われる"],["高橋 丈",2,"最年長でアルバイト歴が長い／リーダーシップがある"],["武藤 太一",1,"忙しい時も手順よく仕事をし色々教えてくれる"]]},
+"CONA錦糸町":{s:[83,35,68,88,81,83,82,85,79,79,85,89,78],l:[["林 七羽",6],["田中 菜々美",2],["伊藤 利将",2]],L:[["林 七羽",8,"みんなに優しく指導／率先して色々やり困った時に助けてくれる"],["清水 ひろか",4,"テキパキ仕事し指示も出す／ホールでもキッチンでもリードしサポート"],["伊藤 利将",1,"責任感がある"]]},
+"CONA柏":{s:[82,43,95,86,80,83,81,86,83,79,77,85,81],l:[["櫻井 帆夏",8],["長尾 夏帆",3],["川畑 志澄",3]],L:[["櫻井 帆夏",13,"ホールやキッチンの指示出しが的確／できる業務が多くリーダー気質"],["石井 夢叶",5,"店全体を見て指示出し／テキパキ動いて無駄がない"],["長尾 夏帆",1,"色んなスタッフとコミュニケーションを取り頼りにされている"]]},
+"CONA麻布十番":{s:[80,53,100,83,79,85,79,85,80,77,79,81,72],l:[["宮野 日暖",5],["バルガスロハス ナオキ",3],["坊田 希理",2]],L:[["松下 智秋",8,"平日ほぼ毎日入り全ポジションできる／長く働いていて頼れる"],["宮野 日暖",3,"新人にも積極的に話しかける／キッチンもホールも周りを見る"],["齊藤 俊太",2,"率先して仕事をする／全ポジションでき臨機応変"]]},
+"CONA津田沼":{s:[87,14,100,95,85,89,85,91,91,90,78,86,84],l:[["髙野 美佑",7],["神山 橙哉",4],["亀田 紗枝",3]],L:[["鈴木 大輔",11,"経験から的確なアドバイス／安心して任せられ周りをまとめリードする力"],["髙野 美佑",7,"歴や仕事量など経験値が高い／バイトリーダー"],["前田 玲奈",1,"忙しくても仕事の指示を出してくれる"]]},
+"CONA田町芝浦":{s:[85,19,83,90,87,82,84,87,85,85,83,89,75],l:[["磯田 明香理",6],["河田 はるか",2],["志村 龍汰",2]],L:[["河田 はるか",8,"たくさん教えてくれる／ミスをなあなあにせず指摘、新ルールにもいち早く取り組む"],["志村 龍汰",6,"周りを見てくれる／よく指示を出している"],["吉原 理一",1,"周りに声をかけながら仕事をまとめている"]]},
+"CONA町田":{s:[78,59,86,86,78,82,71,81,84,76,79,82,65],l:[["松村 一葉",10],["林 健介",3],["山本 彩乃",3]],L:[["栗原 愛琉",6,"責任感がある／先輩後輩関係なく正しい指示を的確にできる"],["松村 一葉",6,"的確に指示してくれる／視野が広くサポートしてくれる"],["鈴木 郁花",4,"新人に丁寧に優しく指導／指示が的確"]]},
+"CONA京急蒲田":{s:[78,61,83,91,81,81,76,82,81,71,66,78,74],l:[["水上 陽那多",4],["田中 寧音",4],["遠藤 菜摘",4]],L:[["小川 菜奈",7,"周りをよく見て判断や指示が的確／他の人に指示を出しながら仕事をする"],["古市 一真",4,"積極的に指示をしてくれる／人間力がある"],["関口 愛可",2,"的確な指示／フード・ドリンク・ホール全て完璧"]]}
+}},
 };
 
 const QS={"人間関係":["#f2d64b",["あなたの上司は、あなたと仕事に必要なコミュニケーションが取れていますか？","あなたは、自店舗の社員を信頼・尊敬し、成長させてもらえていますか？","あなたは、自店舗の店長を信頼・尊敬し、成長させてもらえていますか？","あなたは、自店舗のエリアマネージャーを信頼・尊敬し、成長させてもらえていますか？"]],
@@ -204,7 +230,7 @@ let arKey=0;
 function renderARank(S,P){const IK=[0,...ITEMS.map((_,i)=>i+3)];
  const calc=(X,k)=>{const r=[];Object.keys(AREAS).forEach(a=>{const g=AREAS[a].filter(n=>X.st[n]);if(g.length)r.push({a,g,v:avg(g.map(n=>X.st[n].s[k]))})});r.sort((x,y)=>y.v-x.v);r.forEach(x=>x.r=1+r.filter(y=>y.v>x.v+1e-9).length);return r};
  const R=calc(S,arKey),PR=P?calc(P,arKey):[],pm={};PR.forEach(x=>pm[x.a]=x);const av=S.av[arKey];
- const mx=Math.max(...R.map(x=>x.v)),mn=Math.min(...R.map(x=>x.v)),lo=Math.max(0,Math.floor(mn-8));
+ const mn=Math.min(...R.map(x=>x.v)),lo=Math.max(0,Math.floor(mn-8));
  let h=`<div class="box"><h3>エリアランキング（${cur()}${P?` ／ 比較：${cmpM()}`:""}）</h3><div class="chips">${IK.map(k=>`<button class="${k==arKey?"on":""}" onclick="arKey=${k};render()">${LQ(k)}</button>`).join("")}</div>
  <div class="tw sk1"><table><tr><th>順位</th><th>エリア</th><th>${LQ(arKey)}平均</th><th style="min-width:120px">スコア（｜＝ブランド平均）</th><th>ブランド平均差</th>${P?"<th>前回</th><th>前回比</th><th>前回順位</th>":""}<th>店舗内訳（${LAB(arKey)}）</th></tr>`;
  R.forEach(x=>{const p=pm[x.a],w=(v)=>((v-lo)/(100-lo)*100).toFixed(1),c=x.v-av>=0?"#2e9e5b":"#f08a4b";
